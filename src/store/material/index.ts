@@ -11,6 +11,16 @@ const reducer: Reducer<MaterialState, MaterialActions> = (
   action
 ) => {
   switch (action.type) {
+    case MaterialActionTypes.SET_SEARCH_QUERY:
+      return {
+        ...state,
+        query: action.payload
+      };
+    case MaterialActionTypes.SET_MATERIAL:
+      return {
+        ...state,
+        material: action.payload
+      };
     case MaterialActionTypes.FETCH_MATERIAL:
       return {
         ...state,

@@ -5,7 +5,9 @@ export enum MaterialActionTypes {
   UPDATE_MATERIAL = "@material/UPDATE",
   DELETE_MATERIAL = "@material/DELETE",
   SEARCH_MATERIALS = "@material/SEARCH",
-  CLEAR_MATERIAL = "@material/CLEAR"
+  CLEAR_MATERIAL = "@material/CLEAR",
+  SET_MATERIAL = "@material/SET",
+  SET_SEARCH_QUERY = "@material/SEARCH_QUERY"
 }
 
 export enum MaterialRoutes {
@@ -56,6 +58,16 @@ export interface ClearMaterial {
   payload: null;
 }
 
+export interface SetMaterial {
+  type: MaterialActionTypes.SET_MATERIAL;
+  payload: Material;
+}
+
+export interface SetSearchQuery {
+  type: MaterialActionTypes.SET_SEARCH_QUERY;
+  payload: string;
+}
+
 export type MaterialActions =
   | ClearMaterial
   | SaveMaterial
@@ -63,14 +75,42 @@ export type MaterialActions =
   | DeleteMaterial
   | SearchMaterials
   | GetAllMaterials
-  | FetchMaterial;
+  | FetchMaterial
+  | SetSearchQuery
+  | SetMaterial;
 
 export interface MaterialState {
-  readonly list: [];
+  readonly list: Material[];
   readonly material?: Material | null;
   readonly searchResult?: [];
+  readonly query?: string;
 }
 
+const materialList: Material[] = [
+  {
+    id: 1,
+    nome: "Linha",
+    valorUnt: 1,
+    tipoMedida: "cm",
+    descricao: "Linha Azul"
+  },
+  {
+    id: 2,
+    nome: "Fita",
+    valorUnt: 5,
+    tipoMedida: "m",
+    descricao: "Fita Verde"
+  },
+  {
+    id: 3,
+    nome: "Tecido",
+    valorUnt: 9,
+    tipoMedida: "m2",
+    descricao: "Tecido Estanpado"
+  }
+];
+
 export const initialMaterialState: MaterialState = {
+  // list: materialList
   list: []
 };

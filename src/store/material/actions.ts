@@ -8,8 +8,26 @@ import {
   SaveMaterial,
   Material,
   ClearMaterial,
-  UpdateMaterial
+  UpdateMaterial,
+  SetMaterial,
+  SetSearchQuery
 } from "./types";
+
+export const setSearchQuery: ActionCreator<
+  ThunkAction<Promise<any>, null, null, SetSearchQuery>
+> = (query: string) => {
+  return async (dispatch: Dispatch) => {
+    dispatch({ type: MaterialActionTypes.SET_SEARCH_QUERY, payload: query });
+  };
+};
+
+export const setMaterial: ActionCreator<
+  ThunkAction<Promise<any>, null, null, SetMaterial>
+> = (material: Material) => {
+  return async (dispatch: Dispatch) => {
+    dispatch({ type: MaterialActionTypes.SET_MATERIAL, payload: material });
+  };
+};
 
 export const fetchMaterial: ActionCreator<
   ThunkAction<Promise<any>, MaterialState, null, FetchMaterial>

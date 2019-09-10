@@ -7,6 +7,8 @@ import MaterialForm from "./Form";
 import { AppState } from "../../store";
 import { Material } from "../../store/material/types";
 import history from "../../history";
+import { Container } from "semantic-ui-react";
+import { formCss, titleCss } from "../css";
 
 const MaterialUpdate = () => {
   const dispatch = useDispatch();
@@ -18,7 +20,7 @@ const MaterialUpdate = () => {
     if (!material) {
       history.push("/");
     }
-  }, [dispatch]);
+  }, [dispatch, material]);
 
   const onSubmit = async (formValues: any) => {
     await dispatch(updateMaterial(formValues));
@@ -27,8 +29,8 @@ const MaterialUpdate = () => {
 
   if (material) {
     return (
-      <div>
-        <h1>Novo Material</h1>
+      <Container style={formCss}>
+        <h1 style={titleCss}>Editar Material</h1>
         <MaterialForm
           onSubmit={onSubmit}
           initialValues={_.pick(
@@ -39,7 +41,7 @@ const MaterialUpdate = () => {
             "descricao"
           )}
         />
-      </div>
+      </Container>
     );
   } else {
     return <div>Carregando...</div>;
