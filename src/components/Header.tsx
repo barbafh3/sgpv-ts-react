@@ -24,6 +24,18 @@ const Header: React.FC = () => {
             </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
+        <Dropdown item text="Clientes">
+          <Dropdown.Menu>
+            <Dropdown.Item>
+              <Icon name="plus" />
+              <Link to="/cliente/novo">Novo</Link>
+            </Dropdown.Item>
+            <Dropdown.Item>
+              <Icon name="search" />
+              <Link to="/cliente/pesquisar">Pesquisar</Link>
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
         <Menu.Menu position="right">
           <Menu.Item name="logout" />
         </Menu.Menu>

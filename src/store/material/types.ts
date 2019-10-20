@@ -7,7 +7,8 @@ export enum MaterialActionTypes {
   SEARCH_MATERIALS = "@material/SEARCH",
   CLEAR_MATERIAL = "@material/CLEAR",
   SET_MATERIAL = "@material/SET",
-  SET_SEARCH_QUERY = "@material/SEARCH_QUERY"
+  SET_SEARCH_QUERY = "@material/SEARCH_QUERY",
+  CLEAR_MATERIAL_SEARCH = "@material/CLEAR_SEARCH"
 }
 
 export enum MaterialRoutes {
@@ -16,11 +17,13 @@ export enum MaterialRoutes {
 }
 
 export type Material = {
-  id: number;
+  id?: number;
   nome: string;
   valorUnt: number;
   tipoMedida: string;
   descricao?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 export interface FetchMaterial {
@@ -53,8 +56,18 @@ export interface SearchMaterials {
   payload: Material[];
 }
 
+export interface FindAllMaterials {
+  type: MaterialActionTypes.SEARCH_MATERIALS;
+  payload: Material[];
+}
+
 export interface ClearMaterial {
   type: MaterialActionTypes.CLEAR_MATERIAL;
+  payload: null;
+}
+
+export interface ClearMaterialSearch {
+  type: MaterialActionTypes.CLEAR_MATERIAL_SEARCH;
   payload: null;
 }
 
@@ -70,47 +83,25 @@ export interface SetSearchQuery {
 
 export type MaterialActions =
   | ClearMaterial
+  | ClearMaterialSearch
   | SaveMaterial
   | UpdateMaterial
   | DeleteMaterial
   | SearchMaterials
+  | FindAllMaterials
   | GetAllMaterials
   | FetchMaterial
   | SetSearchQuery
+  | DeleteMaterial
   | SetMaterial;
 
 export interface MaterialState {
   readonly list: Material[];
   readonly material?: Material | null;
-  readonly searchResult?: [];
+  readonly searchResult?: Material[] | null;
   readonly query?: string;
 }
 
-const materialList: Material[] = [
-  {
-    id: 1,
-    nome: "Linha",
-    valorUnt: 1,
-    tipoMedida: "cm",
-    descricao: "Linha Azul"
-  },
-  {
-    id: 2,
-    nome: "Fita",
-    valorUnt: 5,
-    tipoMedida: "m",
-    descricao: "Fita Verde"
-  },
-  {
-    id: 3,
-    nome: "Tecido",
-    valorUnt: 9,
-    tipoMedida: "m2",
-    descricao: "Tecido Estanpado"
-  }
-];
-
 export const initialMaterialState: MaterialState = {
-  // list: materialList
   list: []
 };

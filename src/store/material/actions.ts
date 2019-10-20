@@ -1,6 +1,8 @@
 import { ActionCreator, Dispatch } from "redux";
 import { ThunkAction } from "redux-thunk";
 
+import { requestHandler } from "../../services/nodeDbApi";
+
 import {
   FetchMaterial,
   MaterialActionTypes,
@@ -10,8 +12,41 @@ import {
   ClearMaterial,
   UpdateMaterial,
   SetMaterial,
-  SetSearchQuery
+  SetSearchQuery,
+  SearchMaterials,
+  FindAllMaterials,
+  ClearMaterialSearch,
+  DeleteMaterial
 } from "./types";
+
+export const searchMaterials: ActionCreator<
+  ThunkAction<Promise<any>, null, null, SearchMaterials>
+> = (query: string) => {
+  return async (dispatch: Dispatch) => {
+    const fullQuery = `SELECT * FROM materiais WHERE nome LIKE '%${query}%'`;
+    const resultado = await requestHandler.post("/materiais/buscar", {
+      query: fullQuery
+    });
+    const materiais: Material[] = resultado.data;
+    dispatch({
+      type: MaterialActionTypes.SEARCH_MATERIALS,
+      payload: materiais
+    });
+  };
+};
+
+export const findAllMaterials: ActionCreator<
+  ThunkAction<Promise<any>, null, null, FindAllMaterials>
+> = () => {
+  return async (dispatch: Dispatch) => {
+    const resultado = await requestHandler.get("/materiais");
+    const materiais: Material[] = resultado.data;
+    dispatch({
+      type: MaterialActionTypes.SEARCH_MATERIALS,
+      payload: materiais
+    });
+  };
+};
 
 export const setSearchQuery: ActionCreator<
   ThunkAction<Promise<any>, null, null, SetSearchQuery>
@@ -53,22 +88,37 @@ export const clearMaterial: ActionCreator<
   };
 };
 
+export const clearMaterialSearch: ActionCreator<
+  ThunkAction<Promise<any>, null, null, ClearMaterialSearch>
+> = () => {
+  return async (dispatch: Dispatch) => {
+    dispatch({
+      type: MaterialActionTypes.CLEAR_MATERIAL_SEARCH,
+      payload: null
+    });
+  };
+};
+
 export const saveMaterial: ActionCreator<
   ThunkAction<Promise<any>, null, null, SaveMaterial>
 > = (formValues: any) => {
   return async (dispatch: Dispatch) => {
-    const material: Material = {
-      id: formValues.id,
+    const novoMaterial: Material = {
       nome: formValues.nome,
       valorUnt: formValues.valorUnt,
       tipoMedida: formValues.tipoMedida,
       descricao: formValues.descricao
     };
-    // Saves material using the api
-    dispatch({
-      type: MaterialActionTypes.SAVE_MATERIAL,
-      payload: material
-    });
+    try {
+      const resultado = await requestHandler.post("/materiais", novoMaterial);
+      const material: Material = resultado.data;
+      dispatch({
+        type: MaterialActionTypes.SAVE_MATERIAL,
+        payload: material
+      });
+    } catch (e) {
+      console.log(e);
+    }
   };
 };
 
@@ -76,16 +126,41 @@ export const updateMaterial: ActionCreator<
   ThunkAction<Promise<any>, null, null, UpdateMaterial>
 > = (formValues: any) => {
   return async (dispatch: Dispatch) => {
+    const { id, nome, valorUnt, tipoMedida, descricao } = formValues;
     const material: Material = {
-      id: formValues.id,
-      nome: formValues.nome,
-      valorUnt: formValues.valorUnt,
-      tipoMedida: formValues.tipoMedida
+      id,
+      nome,
+      valorUnt,
+      tipoMedida,
+      descricao
     };
-    // Update material using the api
-    dispatch({
-      type: MaterialActionTypes.SAVE_MATERIAL,
-      payload: material
-    });
+    try {
+      await requestHandler.patch(`/materiais/${id}`, material);
+      dispatch({
+        type: MaterialActionTypes.UPDATE_MATERIAL,
+        payload: material
+      });
+    } catch (e) {}
+  };
+};
+
+export const deleteMaterial: ActionCreator<
+  ThunkAction<Promise<any>, null, null, DeleteMaterial>
+> = (id: number) => {
+  return async (dispatch: Dispatch) => {
+    try {
+      const result = await requestHandler.delete(`/materiais/${id}/remover`);
+      console.log(result);
+      await dispatch({
+        type: MaterialActionTypes.DELETE_MATERIAL,
+        payload: true
+      });
+    } catch (e) {
+      console.log(e);
+      await dispatch({
+        type: MaterialActionTypes.DELETE_MATERIAL,
+        payload: false
+      });
+    }
   };
 };
