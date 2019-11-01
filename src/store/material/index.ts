@@ -61,6 +61,11 @@ const reducer: Reducer<MaterialState, MaterialActions> = (
         ...state,
         list: action.payload
       };
+    case MaterialActionTypes.SET_MATERIAL_LIST:
+      return {
+        ...state,
+        list: action.payload
+      };
     default:
       return state;
   }

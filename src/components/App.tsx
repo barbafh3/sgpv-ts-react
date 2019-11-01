@@ -12,6 +12,12 @@ import MaterialUpdate from "./Material/Update";
 import ClienteNew from "./Cliente/New";
 import ClienteUpdate from "./Cliente/Update";
 import ClienteShow from "./Cliente/Show";
+import ClienteSearch from "./Cliente/Search";
+import ProdutoNew from "./Produto/New";
+import ProdutoUpdate from "./Produto/Update";
+import ProdutoShow from "./Produto/Show";
+import ProdutoSearch from "./Produto/Search";
+import CustoNew from "./Custos/New";
 
 const App: React.FC = () => {
   return (
@@ -25,7 +31,13 @@ const App: React.FC = () => {
         <Route path="/material/editar" exact component={MaterialUpdate} />
         <Route path="/cliente" exact component={ClienteShow} />
         <Route path="/cliente/novo" exact component={ClienteNew} />
-        <Route path="/cliente/alterar" exact component={ClienteUpdate} />
+        <Route path="/cliente/editar" exact component={ClienteUpdate} />
+        <Route path="/cliente/pesquisar" exact component={ClienteSearch} />
+        <Route path="/produto" exact component={ProdutoShow} />
+        <Route path="/produto/novo" exact component={ProdutoNew} />
+        <Route path="/produto/editar" exact component={ProdutoUpdate} />
+        <Route path="/produto/pesquisar" exact component={ProdutoSearch} />
+        <Route path="/custo/novo" exact component={CustoNew} />
       </Container>
     </Router>
   );

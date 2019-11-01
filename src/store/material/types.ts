@@ -1,4 +1,5 @@
 export enum MaterialActionTypes {
+  SET_MATERIAL_LIST = "@material/SET_LIST",
   FETCH_MATERIAL = "@material/FETCH",
   GET_ALL_MATERIALS = "@material/GET_ALL",
   SAVE_MATERIAL = "@material/SAVE",
@@ -17,7 +18,7 @@ export enum MaterialRoutes {
 }
 
 export type Material = {
-  id?: number;
+  id?: string;
   nome: string;
   valorUnt: number;
   tipoMedida: string;
@@ -26,9 +27,18 @@ export type Material = {
   updatedAt?: Date;
 };
 
+export type FBMaterial = {
+  [key: string]: Material;
+};
+
 export interface FetchMaterial {
   type: MaterialActionTypes.FETCH_MATERIAL;
   payload: Material;
+}
+
+export interface SetMaterialList {
+  type: MaterialActionTypes.SET_MATERIAL_LIST;
+  payload: Material[];
 }
 
 export interface GetAllMaterials {
@@ -53,12 +63,12 @@ export interface DeleteMaterial {
 
 export interface SearchMaterials {
   type: MaterialActionTypes.SEARCH_MATERIALS;
-  payload: Material[];
+  payload: FBMaterial;
 }
 
 export interface FindAllMaterials {
   type: MaterialActionTypes.SEARCH_MATERIALS;
-  payload: Material[];
+  payload: FBMaterial;
 }
 
 export interface ClearMaterial {
@@ -93,12 +103,13 @@ export type MaterialActions =
   | FetchMaterial
   | SetSearchQuery
   | DeleteMaterial
+  | SetMaterialList
   | SetMaterial;
 
 export interface MaterialState {
   readonly list: Material[];
   readonly material?: Material | null;
-  readonly searchResult?: Material[] | null;
+  readonly searchResult?: FBMaterial | null;
   readonly query?: string;
 }
 

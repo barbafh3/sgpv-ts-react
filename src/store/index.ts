@@ -6,19 +6,27 @@ import { reducer as formReducer } from "redux-form";
 import materialReducer from "./material";
 import clienteReducer from "./cliente";
 import principalReducer from "./principal";
+import produtoReducer from "./produto";
+import custosReducer from "./custos";
 import { MaterialState } from "./material/types";
 import { PrincipalState } from "./principal/types";
 import { ClienteState } from "./cliente/types";
+import { ProdutoState } from "./produto/types";
+import { CustoState } from "./custos/types";
 
 export interface AppState {
-  materials: MaterialState;
+  materiais: MaterialState;
   clientes: ClienteState;
   principal: PrincipalState;
+  produtos: ProdutoState;
+  custos: CustoState;
 }
 
 const reducers = combineReducers({
-  materials: materialReducer,
+  materiais: materialReducer,
   clientes: clienteReducer,
+  produtos: produtoReducer,
+  custos: custosReducer,
   principal: principalReducer,
   form: formReducer
 });

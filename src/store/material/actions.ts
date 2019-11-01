@@ -1,6 +1,6 @@
 import { ActionCreator, Dispatch } from "redux";
 import { ThunkAction } from "redux-thunk";
-
+import fbDatabase from "../../services/firebaseConfig";
 import { requestHandler } from "../../services/nodeDbApi";
 
 import {
@@ -16,8 +16,10 @@ import {
   SearchMaterials,
   FindAllMaterials,
   ClearMaterialSearch,
-  DeleteMaterial
+  DeleteMaterial,
+  FBMaterial
 } from "./types";
+import parseObject from "../../services/utils";
 
 export const searchMaterials: ActionCreator<
   ThunkAction<Promise<any>, null, null, SearchMaterials>
@@ -39,11 +41,13 @@ export const findAllMaterials: ActionCreator<
   ThunkAction<Promise<any>, null, null, FindAllMaterials>
 > = () => {
   return async (dispatch: Dispatch) => {
-    const resultado = await requestHandler.get("/materiais");
-    const materiais: Material[] = resultado.data;
-    dispatch({
-      type: MaterialActionTypes.SEARCH_MATERIALS,
-      payload: materiais
+    const materialRef = fbDatabase.ref().child("materiais");
+    materialRef.on("value", snapshot => {
+      const raw = snapshot.val();
+      dispatch({
+        type: MaterialActionTypes.SEARCH_MATERIALS,
+        payload: raw
+      });
     });
   };
 };
@@ -103,18 +107,19 @@ export const saveMaterial: ActionCreator<
   ThunkAction<Promise<any>, null, null, SaveMaterial>
 > = (formValues: any) => {
   return async (dispatch: Dispatch) => {
+    const materialRef = fbDatabase.ref().child("materiais");
     const novoMaterial: Material = {
       nome: formValues.nome,
       valorUnt: formValues.valorUnt,
       tipoMedida: formValues.tipoMedida,
       descricao: formValues.descricao
     };
+    const parsedMaterial = parseObject(novoMaterial);
     try {
-      const resultado = await requestHandler.post("/materiais", novoMaterial);
-      const material: Material = resultado.data;
+      materialRef.push(parsedMaterial);
       dispatch({
         type: MaterialActionTypes.SAVE_MATERIAL,
-        payload: material
+        payload: novoMaterial
       });
     } catch (e) {
       console.log(e);
@@ -126,16 +131,19 @@ export const updateMaterial: ActionCreator<
   ThunkAction<Promise<any>, null, null, UpdateMaterial>
 > = (formValues: any) => {
   return async (dispatch: Dispatch) => {
+    const materialRef = fbDatabase.ref().child("materiais");
     const { id, nome, valorUnt, tipoMedida, descricao } = formValues;
     const material: Material = {
-      id,
       nome,
       valorUnt,
       tipoMedida,
       descricao
     };
+    let novoMaterial: FBMaterial = {};
+    novoMaterial[id] = material;
+    const parsedMaterial = parseObject(novoMaterial);
     try {
-      await requestHandler.patch(`/materiais/${id}`, material);
+      materialRef.update(parsedMaterial);
       dispatch({
         type: MaterialActionTypes.UPDATE_MATERIAL,
         payload: material
@@ -148,10 +156,10 @@ export const deleteMaterial: ActionCreator<
   ThunkAction<Promise<any>, null, null, DeleteMaterial>
 > = (id: number) => {
   return async (dispatch: Dispatch) => {
+    const materialRef = fbDatabase.ref().child(`materiais/${id}`);
     try {
-      const result = await requestHandler.delete(`/materiais/${id}/remover`);
-      console.log(result);
-      await dispatch({
+      materialRef.remove();
+      dispatch({
         type: MaterialActionTypes.DELETE_MATERIAL,
         payload: true
       });

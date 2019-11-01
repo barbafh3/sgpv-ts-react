@@ -2,16 +2,23 @@ import React, { useEffect } from "react";
 import { Menu, Dropdown, Icon } from "semantic-ui-react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+import history from "../history";
 
 const Header: React.FC = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {}, [dispatch]);
 
+  const onHomeClick = () => {
+    history.push("/");
+  };
+
   return (
     <>
       <Menu>
-        <Menu.Item header>SGPV</Menu.Item>
+        <Menu.Item header onClick={onHomeClick}>
+          SGPV
+        </Menu.Item>
         <Dropdown item text="Material">
           <Dropdown.Menu>
             <Dropdown.Item>
@@ -33,6 +40,26 @@ const Header: React.FC = () => {
             <Dropdown.Item>
               <Icon name="search" />
               <Link to="/cliente/pesquisar">Pesquisar</Link>
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+        <Dropdown item text="Produtos">
+          <Dropdown.Menu>
+            <Dropdown.Item>
+              <Icon name="plus" />
+              <Link to="/produto/novo">Novo</Link>
+            </Dropdown.Item>
+            <Dropdown.Item>
+              <Icon name="search" />
+              <Link to="/produto/pesquisar">Pesquisar</Link>
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+        <Dropdown item text="Custos">
+          <Dropdown.Menu>
+            <Dropdown.Item>
+              <Icon name="search" />
+              <Link to="/custo/pesquisar">Pesquisar</Link>
             </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
