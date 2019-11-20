@@ -1,4 +1,4 @@
-const parseObject = (obj: Object) => {
+export const parseObject = (obj: Object) => {
   return JSON.parse(
     JSON.stringify(obj, (key, value) => {
       if (value === undefined) {
@@ -9,4 +9,6 @@ const parseObject = (obj: Object) => {
   );
 };
 
-export default parseObject;
+export const sleep = (ms: number) => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+};

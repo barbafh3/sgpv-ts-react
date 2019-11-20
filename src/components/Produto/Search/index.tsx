@@ -36,10 +36,11 @@ const ProdutoSearch: React.FC = () => {
     };
   }, [dispatch]);
 
-  const handleClick = (name: string, produto: Produto) => {
+
+  const handleClick = async (name: string, produto: Produto) => {
     switch (name) {
       case "show":
-        dispatch(setProduto(produto));
+        await dispatch(setProduto(produto));
         history.push("/produto");
         break;
       case "edit":

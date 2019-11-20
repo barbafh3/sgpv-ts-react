@@ -15,7 +15,7 @@ import {
 } from "./types";
 import { requestHandler } from "../../services/nodeDbApi";
 import fbDatabase from "../../services/firebaseConfig";
-import parseObject from "../../services/utils";
+import { parseObject } from "../../services/utils";
 
 export const searchClientes: ActionCreator<
   ThunkAction<Promise<any>, null, null, SearchCliente>

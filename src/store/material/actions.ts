@@ -19,7 +19,7 @@ import {
   DeleteMaterial,
   FBMaterial
 } from "./types";
-import parseObject from "../../services/utils";
+import { parseObject } from "../../services/utils";
 
 export const searchMaterials: ActionCreator<
   ThunkAction<Promise<any>, null, null, SearchMaterials>

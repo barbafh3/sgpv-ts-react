@@ -18,6 +18,7 @@ import ProdutoUpdate from "./Produto/Update";
 import ProdutoShow from "./Produto/Show";
 import ProdutoSearch from "./Produto/Search";
 import CustoNew from "./Custos/New";
+import CustoShow from "./Custos/Show";
 
 const App: React.FC = () => {
   return (
@@ -37,6 +38,7 @@ const App: React.FC = () => {
         <Route path="/produto/novo" exact component={ProdutoNew} />
         <Route path="/produto/editar" exact component={ProdutoUpdate} />
         <Route path="/produto/pesquisar" exact component={ProdutoSearch} />
+        <Route path="/custo" exact component={CustoShow} />
         <Route path="/custo/novo" exact component={CustoNew} />
       </Container>
     </Router>

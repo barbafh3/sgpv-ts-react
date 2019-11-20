@@ -1,12 +1,11 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import fbDatabase from "../../../services/firebaseConfig";
 import { AppState } from "../../../store";
-import { Material, MaterialActionTypes } from "../../../store/material/types";
+import { Material } from "../../../store/material/types";
 import history from "../../../history";
-import { Container, List } from "semantic-ui-react";
+import { Container, List, Button, Icon, Divider } from "semantic-ui-react";
 import { formCss, titleCss } from "../../css";
-import { Produto, ProdutoActionTypes } from "../../../store/produto/types";
+import { Produto } from "../../../store/produto/types";
 import { Custo, CustoActionTypes } from "../../../store/custos/types";
 
 const CustoShow: React.FC = () => {
@@ -20,124 +19,77 @@ const CustoShow: React.FC = () => {
   const produto = useSelector(
     (state: AppState) => state.produtos.produto
   ) as Produto;
-  const query = useSelector((state: AppState) => state.custos.query) as string;
+  const valorTotal = useSelector(
+    (state: AppState) => state.custos.valorTotal
+  ) as number;
 
-  const getProduto = () => {
-    fbDatabase
-      .ref()
-      .child(`produto/${query}`)
-      .on("value", snapshot => {
-        const raw = snapshot.val();
-        const keys = Object.keys(raw);
-        keys.map((key: string) => {
-          const produto: Produto = {
-            id: key,
-            nome: raw[key].nome,
-            maoDeObra: raw[key].maoDeObra,
-            descricao: raw[key].descricao
-          };
-          dispatch({
-            type: ProdutoActionTypes.SET_PRODUTO,
-            payload: produto
-          });
-        });
-      });
-  };
-
-  const getMaterialList = async () => {
-    if (produto) {
-      const custosRef = fbDatabase.ref().child("custos");
-      const materialRef = fbDatabase.ref().child("materiais");
-      let newMaterialList: Material[] = [];
-      let materialIdList: string[] = [];
-      let newCustoList: Custo[] = [];
-      await custosRef
-        .orderByChild("produtoId")
-        .equalTo(query)
-        .on("child_added", snapshot => {
-          const raw = snapshot.val();
-          const keys = Object.keys(raw);
-          keys.map((key: string) => {
-            materialIdList.push(raw[key].materialId);
-            const custo: Custo = {
-              id: key,
-              materialId: raw[key].materialId,
-              produtoId: raw[key].produtoId,
-              qtde: raw[key].qtde
-            };
-            newCustoList.push(custo);
-          });
-        });
-      await materialIdList.map((id: string) => {
-        materialRef.equalTo(id).on("value", snapshot => {
-          const raw = snapshot.val();
-          const keys = Object.keys(raw);
-          keys.map((key: string) => {
-            const material: Material = {
-              id: key,
-              nome: raw[key].nome,
-              valorUnt: raw[key].valorUnt,
-              tipoMedida: raw[key].tipoMedida,
-              descricao: raw[key].descricao
-            };
-            newMaterialList.push(material);
-          });
-        });
-      });
-      dispatch({
-        type: MaterialActionTypes.SET_MATERIAL_LIST,
-        payload: newMaterialList
-      });
-      dispatch({
-        type: CustoActionTypes.SET_CUSTO_LIST,
-        payload: newCustoList
-      });
-    }
+  const setValorTotal = async () => {
+    let valorTotal: number = Number(produto.maoDeObra);
+    materialList.forEach((material: Material) => {
+      const custoMat: Custo[] = custoList.filter(
+        (custo: Custo) => custo.materialId === material.id
+      );
+      const calc = material.valorUnt * custoMat[0].qtde;
+      valorTotal += calc;
+    });
+    await dispatch({
+      type: CustoActionTypes.SET_VALOR_TOTAL,
+      payload: valorTotal
+    });
   };
 
   useEffect(() => {
-    if (!query) {
+    if (!produto) {
       history.push("/");
     } else {
-      getProduto();
-      getMaterialList();
+      (async () => {
+        console.log(materialList);
+        await setValorTotal();
+      })();
     }
   }, [dispatch]);
 
   const renderMaterialItem = (material: Material) => {
     const custoAtual = custoList.filter((custo: Custo) => {
-      return custo.materialId == material.id;
+      return custo.materialId === material.id;
     });
-    const valorTotal = custoAtual[0].qtde * material.valorUnt;
+    const totalMaterial = custoAtual[0].qtde * material.valorUnt;
     return (
       <>
+        <List.Content floated="right">
+          <Button icon color="red">
+            <Icon name="close" />
+          </Button>
+        </List.Content>
         <List.Content>
           <List.Header>{material.nome}</List.Header>
-          <List.Description>{valorTotal}</List.Description>
+          <List.Description>{`${totalMaterial} ${material.tipoMedida} - R$${material.valorUnt}/${material.tipoMedida}`}</List.Description>
         </List.Content>
       </>
     );
   };
 
-  const renderMaterialList = () => {
-    if (materialList) {
-      <List divided>
-        {materialList.map((material: Material) => {
-          return (
-            <List.Item key={material.id}>
-              {renderMaterialItem(material)}
-            </List.Item>
-          );
-        })}
-      </List>;
-    }
-  };
-
-  if (produto) {
+  if (produto && materialList) {
     return (
       <Container style={formCss}>
         <h1 style={titleCss}>{produto.nome}</h1>
-        {renderMaterialList()}
+        <List divided>
+          {materialList.map(material => {
+            return (
+              <List.Item key={material.id}>
+                {renderMaterialItem(material as Material)}
+              </List.Item>
+            );
+          })}
+          <List.Item key={produto.id}>
+            <List.Content>
+              <List.Header>Mão de Obra</List.Header>
+              <List.Description>{`R$${produto.maoDeObra}`}</List.Description>
+            </List.Content>
+          </List.Item>
+        </List>
+        <Divider />
+        <div>Valor Total: R${valorTotal}</div>
       </Container>
     );
   } else {

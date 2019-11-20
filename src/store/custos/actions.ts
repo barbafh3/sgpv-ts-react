@@ -1,7 +1,7 @@
 import { ActionCreator, Dispatch } from "redux";
 import { ThunkAction } from "redux-thunk";
 import { SetCusto, Custo, CustoActionTypes, FBCusto } from "./types";
-import parseObject from "../../services/utils";
+import { parseObject } from "../../services/utils";
 import fbDatabase from "../../services/firebaseConfig";
 
 export const saveCusto: ActionCreator<

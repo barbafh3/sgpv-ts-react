@@ -41,6 +41,11 @@ const reducer: Reducer<CustoState, CustoActions> = (
         ...state,
         materialOptions: action.payload
       };
+    case CustoActionTypes.SET_VALOR_TOTAL:
+      return {
+        ...state,
+        valorTotal: action.payload
+      };
     default:
       return state;
   }

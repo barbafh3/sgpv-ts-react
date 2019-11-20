@@ -1,0 +1,10 @@
+{
+  "plugins": ["prettier", "react"],
+  "extends": ["prettier"],
+  "ecmaFeatures": {
+    "jsx": true,
+    "modules": true
+  "rules": {
+    "prettier/prettier": "error"
+  }
+}

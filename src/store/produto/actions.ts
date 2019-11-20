@@ -8,7 +8,7 @@ import {
   SetProdutoQuery,
   SetProdutoSearch
 } from "./types";
-import parseObject from "../../services/utils";
+import { parseObject } from "../../services/utils";
 import fbDatabase from "../../services/firebaseConfig";
 
 export const searchSpecific: ActionCreator<
