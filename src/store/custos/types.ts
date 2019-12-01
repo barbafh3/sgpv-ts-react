@@ -5,14 +5,15 @@ export enum CustoActionTypes {
   SET_CUSTO_QUERY = "@custo/SET_QUERY",
   SET_CUSTO_PRODUTO_LIST = "@custo/SET_PRODUTO_LIST",
   SET_CUSTO_MATERIAL_LIST = "@custo/SET_MATERIAL_LIST",
-  SET_VALOR_TOTAL = "@custo/SET_VALOR_TOTAL"
+  SET_VALOR_TOTAL = "@custo/SET_VALOR_TOTAL",
+  SET_CUSTO_SELECTED_ID = "@custo/SET_SELECTED_ID"
 }
 
 export type Custo = {
   id?: string;
-  produtoId: string;
-  materialId: string;
-  qtde: number;
+  ProdutoId: string;
+  MaterialId: string;
+  quantidade: number;
 };
 
 export type FBCusto = {
@@ -22,11 +23,12 @@ export type FBCusto = {
 export interface CustoState {
   list: Custo[];
   custo?: Custo | null;
-  searchResult?: FBCusto | null;
+  searchResult?: Custo[] | null;
   query?: any;
   produtoOptions?: [] | null;
   materialOptions?: [] | null;
   valorTotal?: number | null;
+  selectedId?: string;
 }
 
 export interface SetCusto {
@@ -41,7 +43,7 @@ export interface SetCustoList {
 
 export interface SetCustoSearch {
   type: CustoActionTypes.SET_CUSTO_SEARCH;
-  payload: FBCusto;
+  payload: Custo[];
 }
 
 export interface SetCustoQuery {
@@ -64,6 +66,11 @@ export interface SetValorTotal {
   payload: number;
 }
 
+export interface SetCustoSelectedId {
+  type: CustoActionTypes.SET_CUSTO_SELECTED_ID;
+  payload: string;
+}
+
 export type CustoActions =
   | SetCusto
   | SetCustoList
@@ -71,6 +78,7 @@ export type CustoActions =
   | SetCustoProdutoList
   | SetCustoMaterialList
   | SetValorTotal
+  | SetCustoSelectedId
   | SetCustoQuery;
 
 export const initialCustoState: CustoState = {

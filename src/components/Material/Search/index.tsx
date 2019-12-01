@@ -10,7 +10,7 @@ import {
 } from "semantic-ui-react";
 
 import { AppState } from "../../../store";
-import { Material, FBMaterial } from "../../../store/material/types";
+import { Material } from "../../../store/material/types";
 import { titleCss, listCss } from "../../css";
 import {
   setMaterial,
@@ -27,7 +27,7 @@ const MaterialSearch = () => {
   const query = useSelector((state: AppState) => state.materiais.query);
   const searchResult = useSelector(
     (state: AppState) => state.materiais.searchResult
-  ) as FBMaterial;
+  ) as Material[];
 
   useEffect(() => {
     return () => {
@@ -122,13 +122,14 @@ const MaterialSearch = () => {
 
   const renderList = () => {
     if (searchResult) {
-      const keys = Object.keys(searchResult);
       return (
         <List divided>
-          {keys.map((key: string) => {
-            const material = searchResult[key] as Material;
-            material["id"] = key;
-            return <List.Item key={key}>{renderListItem(material)}</List.Item>;
+          {searchResult.map((material: Material) => {
+            return (
+              <List.Item key={material.id}>
+                {renderListItem(material)}
+              </List.Item>
+            );
           })}
         </List>
       );
@@ -140,6 +141,27 @@ const MaterialSearch = () => {
       );
     }
   };
+
+  // const renderList = () => {
+  //   if (searchResult) {
+  //     const keys = Object.keys(searchResult);
+  //     return (
+  //       <List divided>
+  //         {keys.map((key: string) => {
+  //           const material = searchResult[key] as Material;
+  //           material["id"] = key;
+  //           return <List.Item key={key}>{renderListItem(material)}</List.Item>;
+  //         })}
+  //       </List>
+  //     );
+  //   } else {
+  //     return (
+  //       <Container>
+  //         <p>Use o campo acima para realizar uma pesquisa</p>
+  //       </Container>
+  //     );
+  //   }
+  // };
 
   return (
     <Container style={listCss}>

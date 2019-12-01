@@ -46,6 +46,11 @@ const reducer: Reducer<CustoState, CustoActions> = (
         ...state,
         valorTotal: action.payload
       };
+    case CustoActionTypes.SET_CUSTO_SELECTED_ID:
+      return {
+        ...state,
+        selectedId: action.payload
+      };
     default:
       return state;
   }

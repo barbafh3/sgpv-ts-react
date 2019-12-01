@@ -1,7 +1,7 @@
 import React, { useEffect, ChangeEvent } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../store";
-import { FBProduto, Produto } from "../../../store/produto/types";
+import { Produto } from "../../../store/produto/types";
 import {
   clearProdutoSearch,
   setProduto,
@@ -21,21 +21,20 @@ import {
   Divider
 } from "semantic-ui-react";
 import { listCss, titleCss } from "../../css";
-import fbDatabase from "../../../services/firebaseConfig";
+import { sleep } from "../../../services/utils";
 
 const ProdutoSearch: React.FC = () => {
   const dispatch = useDispatch();
   const query = useSelector((state: AppState) => state.produtos.query);
   const searchResult = useSelector(
     (state: AppState) => state.produtos.searchResult
-  ) as FBProduto;
+  ) as Produto[];
 
   useEffect(() => {
     return () => {
       dispatch(clearProdutoSearch());
     };
   }, [dispatch]);
-
 
   const handleClick = async (name: string, produto: Produto) => {
     switch (name) {
@@ -68,20 +67,10 @@ const ProdutoSearch: React.FC = () => {
     }
   };
 
-  const onAddClick = (produto: Produto) => {
-    console.log(produto.id);
-    const produtoRef = fbDatabase.ref(`produtos/${produto.id}`);
-    const materialId: string = "HUHHUHUHUHU";
-    interface Teste {
-      materiais?: {
-        [key: string]: number;
-      };
-    }
-    let material: Teste = {};
-    const id: { [key: string]: number } = {};
-    id[`${materialId}`] = 1;
-    material["materiais"] = id;
-    produtoRef.update(material);
+  const onAddClick = async (produto: Produto) => {
+    await dispatch(setProduto(produto));
+    await sleep(1000);
+    history.push("/custo/novo");
   };
 
   const onFilterClick = () => {
@@ -147,13 +136,12 @@ const ProdutoSearch: React.FC = () => {
 
   const renderList = () => {
     if (searchResult) {
-      const keys = Object.keys(searchResult);
       return (
         <List divided>
-          {keys.map((key: string) => {
-            const produto = searchResult[key] as Produto;
-            produto["id"] = key;
-            return <List.Item key={key}>{renderListItem(produto)}</List.Item>;
+          {searchResult.map((produto: Produto) => {
+            return (
+              <List.Item key={produto.id}>{renderListItem(produto)}</List.Item>
+            );
           })}
         </List>
       );
@@ -165,6 +153,27 @@ const ProdutoSearch: React.FC = () => {
       );
     }
   };
+
+  // const renderList = () => {
+  //   if (searchResult) {
+  //     const keys = Object.keys(searchResult);
+  //     return (
+  //       <List divided>
+  //         {keys.map((key: string) => {
+  //           const produto = searchResult[key] as Produto;
+  //           produto["id"] = key;
+  //           return <List.Item key={key}>{renderListItem(produto)}</List.Item>;
+  //         })}
+  //       </List>
+  //     );
+  //   } else {
+  //     return (
+  //       <Container>
+  //         <p>Use o campo acima para realizar uma pesquisa</p>
+  //       </Container>
+  //     );
+  //   }
+  // };
 
   return (
     <Container style={listCss}>

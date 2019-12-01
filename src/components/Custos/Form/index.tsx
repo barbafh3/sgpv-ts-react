@@ -1,10 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { Custo, CustoActionTypes } from "../../../store/custos/types";
 import { InjectedFormProps, Field, FormErrors, reduxForm } from "redux-form";
 import { Form, Button } from "semantic-ui-react";
-import fbDatabase from "../../../services/firebaseConfig";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../store";
+import { requestHandler } from "../../../services/nodeDbApi";
+import { Material } from "../../../store/material/types";
+import { Produto } from "../../../store/produto/types";
 
 interface FormProps {
   onSubmit: (data: Custo) => void;
@@ -14,57 +16,37 @@ const CustoForm: React.FC<
   FormProps & InjectedFormProps<Custo, FormProps>
 > = props => {
   const dispatch = useDispatch();
+  const produto = useSelector((state: AppState) => state.produtos.produto);
   const produtoOptions = useSelector(
     (state: AppState) => state.custos.produtoOptions
   );
   const materialOptions = useSelector(
     (state: AppState) => state.custos.materialOptions
   );
+  const selectedId = useSelector((state: AppState) => state.custos.selectedId);
 
-  const setProdutoSelect = () => {
-    fbDatabase
-      .ref()
-      .child("produtos")
-      .on("value", snapshot => {
-        const raw = snapshot.val();
-        const keys = Object.keys(raw);
-        const newProdutoOptions = keys.map((key: string) => (
-          <option key={key} value={key}>
-            {raw[key].nome}
-          </option>
-        ));
-        dispatch({
-          type: CustoActionTypes.SET_CUSTO_PRODUTO_LIST,
-          payload: newProdutoOptions
-        });
-      });
-  };
+  const setProdutoSelect = useCallback(async () => {
+    const result = await requestHandler.get("/produtos");
+    dispatch({
+      type: CustoActionTypes.SET_CUSTO_PRODUTO_LIST,
+      payload: result.data
+    });
+  }, [dispatch]);
 
-  const setMaterialSelect = () => {
-    fbDatabase
-      .ref()
-      .child("materiais")
-      .on("value", snapshot => {
-        const raw = snapshot.val();
-        const keys = Object.keys(raw);
-        const newMaterialOptions = keys.map((key: string) => (
-          <option key={key} value={key}>
-            {raw[key].nome}
-          </option>
-        ));
-        dispatch({
-          type: CustoActionTypes.SET_CUSTO_MATERIAL_LIST,
-          payload: newMaterialOptions
-        });
-      });
-  };
+  const setMaterialSelect = useCallback(async () => {
+    const result = await requestHandler.get("/materiais");
+    dispatch({
+      type: CustoActionTypes.SET_CUSTO_MATERIAL_LIST,
+      payload: result.data
+    });
+  }, [dispatch]);
 
   useEffect(() => {
     setProdutoSelect();
     setMaterialSelect();
-  }, [dispatch]);
+  }, [setProdutoSelect, setMaterialSelect]);
 
-  const renderForm = () => {
+  if (produtoOptions && materialOptions) {
     return (
       <div>
         <Form onSubmit={props.handleSubmit(props.onSubmit)}>
@@ -73,16 +55,53 @@ const CustoForm: React.FC<
           </Form.Field>
           <Form.Field>
             <label>Produto:</label>
-            <Field name="produtoId" component="select">
+            <Field
+              name="produtoId"
+              component="select"
+              defaultValue={selectedId}
+            >
               <option />
-              {produtoOptions}
+              {produtoOptions.map((prod: Produto) => {
+                if (produto) {
+                  console.log("Prod:" + prod.id + " - Produto: " + produto.id);
+                  if (produto.id === prod.id) {
+                    dispatch({
+                      type: CustoActionTypes.SET_CUSTO_SELECTED_ID,
+                      payload: prod.id
+                    });
+                    return (
+                      <option value={prod.id} key={prod.id}>
+                        {prod.nome}
+                      </option>
+                    );
+                  } else {
+                    return (
+                      <option value={prod.id} key={prod.id}>
+                        {prod.nome}
+                      </option>
+                    );
+                  }
+                } else {
+                  return (
+                    <option value={prod.id} key={prod.id}>
+                      {prod.nome}
+                    </option>
+                  );
+                }
+              })}
             </Field>
           </Form.Field>
           <Form.Field>
             <label>Material:</label>
             <Field name="materialId" component="select">
               <option />
-              {materialOptions}
+              {materialOptions.map((material: Material) => {
+                return (
+                  <option value={material.id} key={material.id}>
+                    {material.nome}
+                  </option>
+                );
+              })}
             </Field>
           </Form.Field>
           <Form.Field>
@@ -95,9 +114,9 @@ const CustoForm: React.FC<
         </Form>
       </div>
     );
-  };
-
-  return <>{renderForm()}</>;
+  } else {
+    return <div>Carregando...</div>;
+  }
 };
 
 const validateFields = (formValues: Readonly<Custo>): FormErrors<FormData> => {

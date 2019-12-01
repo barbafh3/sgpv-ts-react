@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../store";
 import { Material } from "../../../store/material/types";
@@ -7,6 +7,10 @@ import { Container, List, Button, Icon, Divider } from "semantic-ui-react";
 import { formCss, titleCss } from "../../css";
 import { Produto } from "../../../store/produto/types";
 import { Custo, CustoActionTypes } from "../../../store/custos/types";
+import {
+  getMateriaisCusto,
+  getCustosProduto
+} from "../../../store/custos/actions";
 
 const CustoShow: React.FC = () => {
   const dispatch = useDispatch();
@@ -23,37 +27,51 @@ const CustoShow: React.FC = () => {
     (state: AppState) => state.custos.valorTotal
   ) as number;
 
-  const setValorTotal = async () => {
+  const setValorTotal = useCallback(async () => {
     let valorTotal: number = Number(produto.maoDeObra);
-    materialList.forEach((material: Material) => {
-      const custoMat: Custo[] = custoList.filter(
-        (custo: Custo) => custo.materialId === material.id
+    await materialList.forEach(async (material: Material) => {
+      const custoMat: Custo[] = await custoList.filter(
+        (custo: Custo) => custo.MaterialId === material.id
       );
-      const calc = material.valorUnt * custoMat[0].qtde;
+      const calc = material.valorUnt * custoMat[0].quantidade;
+      console.log("Material VU: " + material.valorUnt);
+      console.log("Quantidade: " + custoMat[0].quantidade);
+      console.log("Calc: " + calc);
       valorTotal += calc;
     });
+    console.log("Total: " + valorTotal);
     await dispatch({
       type: CustoActionTypes.SET_VALOR_TOTAL,
       payload: valorTotal
     });
-  };
+  }, [dispatch, custoList, materialList, produto]);
 
   useEffect(() => {
     if (!produto) {
       history.push("/");
     } else {
       (async () => {
-        console.log(materialList);
-        await setValorTotal();
+        if (custoList.length === 0) {
+          await dispatch(getCustosProduto(produto.id));
+        }
+        if (materialList.length === 0) {
+          await dispatch(getMateriaisCusto(produto.id));
+        }
       })();
     }
-  }, [dispatch]);
+  }, [dispatch, produto, custoList, materialList]);
+
+  useEffect(() => {
+    (async () => {
+      await setValorTotal();
+    })();
+  }, [valorTotal, setValorTotal]);
 
   const renderMaterialItem = (material: Material) => {
     const custoAtual = custoList.filter((custo: Custo) => {
-      return custo.materialId === material.id;
+      return custo.MaterialId === material.id;
     });
-    const totalMaterial = custoAtual[0].qtde * material.valorUnt;
+    const custoMaterial = custoAtual[0].quantidade * material.valorUnt;
     return (
       <>
         <List.Content floated="right">
@@ -63,7 +81,7 @@ const CustoShow: React.FC = () => {
         </List.Content>
         <List.Content>
           <List.Header>{material.nome}</List.Header>
-          <List.Description>{`${totalMaterial} ${material.tipoMedida} - R$${material.valorUnt}/${material.tipoMedida}`}</List.Description>
+          <List.Description>{`${custoAtual[0].quantidade} X R$${material.valorUnt}/${material.tipoMedida} - R$ ${custoMaterial}`}</List.Description>
         </List.Content>
       </>
     );
@@ -89,12 +107,39 @@ const CustoShow: React.FC = () => {
           </List.Item>
         </List>
         <Divider />
-        <div>Valor Total: R${valorTotal}</div>
+        <div>Custo Total: R${valorTotal}</div>
       </Container>
     );
   } else {
     return <div>Carregando...</div>;
   }
+
+  // if (produto && materialList) {
+  //   return (
+  //     <Container style={formCss}>
+  //       <h1 style={titleCss}>{produto.nome}</h1>
+  //       <List divided>
+  //         {materialList.map(material => {
+  //           return (
+  //             <List.Item key={material.id}>
+  //               {renderMaterialItem(material as Material)}
+  //             </List.Item>
+  //           );
+  //         })}
+  //         <List.Item key={produto.id}>
+  //           <List.Content>
+  //             <List.Header>Mão de Obra</List.Header>
+  //             <List.Description>{`R$${produto.maoDeObra}`}</List.Description>
+  //           </List.Content>
+  //         </List.Item>
+  //       </List>
+  //       <Divider />
+  //       <div>Valor Total: R${valorTotal}</div>
+  //     </Container>
+  //   );
+  // } else {
+  //   return <div>Carregando...</div>;
+  // }
 };
 
 export default CustoShow;

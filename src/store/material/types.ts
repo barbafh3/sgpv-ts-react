@@ -63,12 +63,12 @@ export interface DeleteMaterial {
 
 export interface SearchMaterials {
   type: MaterialActionTypes.SEARCH_MATERIALS;
-  payload: FBMaterial;
+  payload: Material[];
 }
 
 export interface FindAllMaterials {
   type: MaterialActionTypes.SEARCH_MATERIALS;
-  payload: FBMaterial;
+  payload: Material[];
 }
 
 export interface ClearMaterial {
@@ -109,7 +109,7 @@ export type MaterialActions =
 export interface MaterialState {
   readonly list: Material[];
   readonly material?: Material | null;
-  readonly searchResult?: FBMaterial | null;
+  readonly searchResult?: Material[] | null;
   readonly query?: string;
 }
 

@@ -2,7 +2,8 @@ export enum ProdutoActionTypes {
   SET_PRODUTO = "@produto/SET",
   SET_PRODUTO_LIST = "@produto/SET_LIST",
   SET_PRODUTO_SEARCH = "@produto/SET_SEARCH",
-  SET_PRODUTO_QUERY = "@produto/SET_QUERY"
+  SET_PRODUTO_QUERY = "@produto/SET_QUERY",
+  DELETE_PRODUTO = "@produto/DELETE"
 }
 
 export type Produto = {
@@ -10,7 +11,6 @@ export type Produto = {
   nome: string;
   maoDeObra: number;
   descricao?: string;
-  materiais?: { [key: string]: boolean };
 };
 
 export type FBProduto = {
@@ -29,7 +29,7 @@ export interface SetProdutoList {
 
 export interface SetProdutoSearch {
   type: ProdutoActionTypes.SET_PRODUTO_SEARCH;
-  payload: FBProduto;
+  payload: Produto[];
 }
 
 export interface SetProdutoQuery {
@@ -46,7 +46,7 @@ export type ProdutoActions =
 export interface ProdutoState {
   list: Produto[];
   produto?: Produto | null;
-  searchResult?: FBProduto | null;
+  searchResult?: Produto[] | null;
   query?: string;
 }
 
