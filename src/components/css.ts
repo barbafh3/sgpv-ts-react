@@ -5,6 +5,11 @@ export const formCss = {
   paddingRight: "30%"
 } as CSSProperties;
 
+export const tableCss = {
+  paddingLeft: "25%",
+  paddingRight: "25%"
+} as CSSProperties;
+
 export const listCss = {
   paddingLeft: "20%",
   paddingRight: "20%"

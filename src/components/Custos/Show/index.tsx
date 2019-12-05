@@ -4,7 +4,7 @@ import { AppState } from "../../../store";
 import { Material } from "../../../store/material/types";
 import history from "../../../history";
 import { Container, Button, Icon, Table } from "semantic-ui-react";
-import { formCss, titleCss } from "../../css";
+import { formCss, titleCss, tableCss } from "../../css";
 import { Produto } from "../../../store/produto/types";
 import { Custo, CustoActionTypes } from "../../../store/custos/types";
 import {
@@ -103,15 +103,21 @@ const CustoShow: React.FC = () => {
     );
   };
 
+  const onSendToCartClick = () => {};
+
   const onAddCustoClick = () => {
     dispatch(clearMaterialList());
     dispatch(clearCustoList());
     history.push("/custo/novo");
   };
 
+  const onBackClick = () => {
+    history.goBack();
+  };
+
   if (produto && materialList && valorTotal) {
     return (
-      <Container style={formCss}>
+      <Container style={tableCss}>
         <h1 style={titleCss}>{produto.nome}</h1>
         <Table singleLine>
           <Table.Header>
@@ -154,8 +160,14 @@ const CustoShow: React.FC = () => {
             </Table.Row>
           </Table.Body>
         </Table>
+        <Button primary floated="right" onClick={onBackClick}>
+          Voltar
+        </Button>
         <Button positive floated="right" onClick={onAddCustoClick}>
           Adicionar material ao custo
+        </Button>
+        <Button primary floated="right" onClick={onSendToCartClick}>
+          Adicionar ao carrinho
         </Button>
       </Container>
     );

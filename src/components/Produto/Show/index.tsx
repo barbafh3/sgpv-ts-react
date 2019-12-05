@@ -26,9 +26,6 @@ const ProdutoShow: React.FC = () => {
   };
 
   const onShowCustoClick = async () => {
-    // if (produto) {
-    // }
-    //await sleep(1500);
     history.push("/custo");
   };
 
@@ -40,11 +37,11 @@ const ProdutoShow: React.FC = () => {
           meta={`R$ ${produto.maoDeObra}`}
           description={produto.descricao}
         />
-        <Button primary floated="right" onClick={onShowCustoClick}>
-          Ver Custo
-        </Button>
         <Button primary floated="right" onClick={onBackClick}>
           Voltar
+        </Button>
+        <Button positive floated="right" onClick={onShowCustoClick}>
+          Ver Custo
         </Button>
       </Container>
     );

@@ -9,7 +9,7 @@ import {
   setClienteQuery,
   searchClientes
 } from "../../../store/cliente/actions";
-import { Cliente, FBClienteResult } from "../../../store/cliente/types";
+import { Cliente } from "../../../store/cliente/types";
 import history from "../../../history";
 import {
   Input,
@@ -26,7 +26,10 @@ const ClienteSearch = () => {
   const query = useSelector((state: AppState) => state.clientes.query);
   const searchResult = useSelector(
     (state: AppState) => state.clientes.searchResult
-  ) as FBClienteResult;
+  ) as Cliente[];
+  const clientes = useSelector(
+    (state: AppState) => state.clientes.list
+  ) as Cliente[];
 
   useEffect(() => {
     return () => {
@@ -121,16 +124,25 @@ const ClienteSearch = () => {
 
   const renderList = () => {
     if (searchResult) {
-      const keys = Object.keys(searchResult);
-      return (
-        <List divided>
-          {keys.map((key: string) => {
-            const cliente = searchResult[key] as Cliente;
-            cliente["id"] = key;
-            return <List.Item key={key}>{renderListItem(cliente)}</List.Item>;
-          })}
-        </List>
-      );
+      if (searchResult.length > 0) {
+        return (
+          <List divided>
+            {searchResult.map((cliente: Cliente) => {
+              return (
+                <List.Item key={cliente.id}>
+                  {renderListItem(cliente)}
+                </List.Item>
+              );
+            })}
+          </List>
+        );
+      } else {
+        return (
+          <Container>
+            <p>Nenhum resultado encontrado</p>
+          </Container>
+        );
+      }
     } else {
       return (
         <Container>

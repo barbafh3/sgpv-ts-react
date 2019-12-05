@@ -26,13 +26,27 @@ const ClienteShow: React.FC = () => {
     history.goBack();
   };
 
+  const getDescription = (cli: Cliente) => {
+    let description: string = "Endereço:";
+    if (cli.endereco) {
+      description += " " + cli.endereco;
+    }
+    if (cli.bairro) {
+      description += " " + cli.bairro;
+    }
+    if (cli.cidade) {
+      description += " " + cli.cidade;
+    }
+    return description;
+  };
+
   if (cliente) {
     return (
       <Container style={cardCss}>
         <Card
           header={cliente.nome}
           meta={`${cliente.telefone} - ${cliente.email}`}
-          description={`Endereço: ${cliente.endereco}, ${cliente.bairro}, ${cliente.cidade}`}
+          description={getDescription(cliente)}
         />
         <Button primary floated="right" onClick={onBackClick}>
           Voltar

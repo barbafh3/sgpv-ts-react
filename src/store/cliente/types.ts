@@ -65,7 +65,7 @@ export interface DeleteCliente {
 
 export interface SearchCliente {
   type: ClienteActionTypes.SET_CLIENTE_SEARCH;
-  payload: FBClienteResult;
+  payload: Cliente[];
 }
 
 export interface SetClienteQuery {
@@ -88,7 +88,7 @@ export type ClienteActions =
 export interface ClienteState {
   readonly list: Cliente[];
   readonly cliente?: Cliente | null;
-  readonly searchResult?: FBClienteResult | null;
+  readonly searchResult?: Cliente[] | null;
   readonly query?: string;
 }
 
