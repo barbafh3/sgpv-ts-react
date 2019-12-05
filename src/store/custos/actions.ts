@@ -6,28 +6,33 @@ import fbDatabase from "../../services/firebaseConfig";
 import { requestHandler } from "../../services/nodeDbApi";
 import { MaterialActionTypes } from "../material/types";
 
-export const saveCusto: ActionCreator<
-  ThunkAction<Promise<any>, null, null, SetCusto>
-> = (formValues: any) => {
+export const saveCusto: ActionCreator<ThunkAction<
+  Promise<any>,
+  null,
+  null,
+  SetCusto
+>> = (formValues: any) => {
   return async (dispatch: Dispatch) => {
-    const custosRef = fbDatabase.ref().child("custos");
-    const custo: Custo = {
-      ProdutoId: formValues.ProdutoId,
-      MaterialId: formValues.MaterialId,
-      quantidade: formValues.quantidade
+    const { ProdutoId, MaterialId, quantidade } = formValues;
+    const custo = {
+      ProdutoId,
+      MaterialId,
+      quantidade
     };
-    const parsedCusto = parseObject(custo);
-    custosRef.push(parsedCusto);
+    const result = await requestHandler.post("/custos", custo);
     dispatch({
       type: CustoActionTypes.SET_CUSTO,
-      payload: custo
+      payload: result.data
     });
   };
 };
 
-export const updateCusto: ActionCreator<
-  ThunkAction<Promise<any>, null, null, SetCusto>
-> = (formValues: any) => {
+export const updateCusto: ActionCreator<ThunkAction<
+  Promise<any>,
+  null,
+  null,
+  SetCusto
+>> = (formValues: any) => {
   return async (dispatch: Dispatch) => {
     const custosRef = fbDatabase.ref().child("custos");
     const custo: Custo = {
@@ -46,9 +51,12 @@ export const updateCusto: ActionCreator<
   };
 };
 
-export const getMateriaisCusto: ActionCreator<
-  ThunkAction<Promise<any>, null, null, SetCusto>
-> = (id: number) => {
+export const getMateriaisCusto: ActionCreator<ThunkAction<
+  Promise<any>,
+  null,
+  null,
+  SetCusto
+>> = (id: number) => {
   return async (dispatch: Dispatch) => {
     const query = {
       query: `SELECT materiais.* 
@@ -68,9 +76,48 @@ export const getMateriaisCusto: ActionCreator<
   };
 };
 
-export const getCustosProduto: ActionCreator<
-  ThunkAction<Promise<any>, null, null, SetCusto>
-> = (id: number) => {
+export const clearMaterialList: ActionCreator<ThunkAction<
+  Promise<any>,
+  null,
+  null,
+  SetCusto
+>> = () => {
+  return async (dispatch: Dispatch) => {
+    dispatch({
+      type: MaterialActionTypes.SET_MATERIAL_LIST,
+      payload: []
+    });
+  };
+};
+
+export const deleteCusto: ActionCreator<ThunkAction<
+  Promise<any>,
+  null,
+  null,
+  SetCusto
+>> = (id: number) => {
+  return async (dispatch: Dispatch) => {
+    try {
+      await requestHandler.delete(`/custos/${id}/remover`);
+      dispatch({
+        type: CustoActionTypes.DELETE_CUSTO,
+        payload: true
+      });
+    } catch (e_) {
+      dispatch({
+        type: CustoActionTypes.DELETE_CUSTO,
+        payload: false
+      });
+    }
+  };
+};
+
+export const getCustosProduto: ActionCreator<ThunkAction<
+  Promise<any>,
+  null,
+  null,
+  SetCusto
+>> = (id: number) => {
   return async (dispatch: Dispatch) => {
     const query = {
       query: `SELECT * 
@@ -86,5 +133,19 @@ export const getCustosProduto: ActionCreator<
     } catch (e) {
       console.log(e);
     }
+  };
+};
+
+export const clearCustoList: ActionCreator<ThunkAction<
+  Promise<any>,
+  null,
+  null,
+  SetCusto
+>> = () => {
+  return async (dispatch: Dispatch) => {
+    dispatch({
+      type: CustoActionTypes.SET_CUSTO_LIST,
+      payload: []
+    });
   };
 };

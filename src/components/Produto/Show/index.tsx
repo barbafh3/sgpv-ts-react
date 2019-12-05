@@ -32,59 +32,6 @@ const ProdutoShow: React.FC = () => {
     history.push("/custo");
   };
 
-  // const getMaterialList = async () => {
-  //   if (produto) {
-  //     const custosRef = fbDatabase.ref().child("custos");
-  //     const materialRef = fbDatabase.ref().child("materiais");
-  //     let newMaterialList: Material[] = [];
-  //     let newCustoList: Custo[] = [];
-  //     await custosRef
-  //       .orderByChild("produtoId")
-  //       .equalTo(`${produto.id}`)
-  //       .on("value", snapshot => {
-  //         const raw = snapshot.val();
-  //         if (raw) {
-  //           const keys = Object.keys(raw);
-  //           keys.map(async (key: string) => {
-  //             const custo: Custo = {
-  //               id: key,
-  //               materialId: raw[key].materialId,
-  //               produtoId: raw[key].produtoId,
-  //               qtde: raw[key].qtde
-  //             };
-  //             newCustoList.push(custo);
-  //             await materialRef
-  //               .child(raw[key].materialId)
-  //               .on("value", snapshot => {
-  //                 const materialRaw = snapshot.val();
-  //                 const materialKeys = Object.keys(materialRaw);
-  //                 materialKeys.map((materialKey: string) => {
-  //                   const material: Material = {
-  //                     id: raw[key].materialId,
-  //                     nome: materialRaw.nome,
-  //                     valorUnt: materialRaw.valorUnt,
-  //                     tipoMedida: materialRaw.tipoMedida,
-  //                     descricao: materialRaw.descricao
-  //                   };
-  //                   if (!newMaterialList.some(e => e.id === material.id)) {
-  //                     newMaterialList.push(material);
-  //                   }
-  //                 });
-  //               });
-  //           });
-  //         }
-  //       });
-  //     await dispatch({
-  //       type: MaterialActionTypes.SET_MATERIAL_LIST,
-  //       payload: newMaterialList
-  //     });
-  //     await dispatch({
-  //       type: CustoActionTypes.SET_CUSTO_LIST,
-  //       payload: newCustoList
-  //     });
-  //   }
-  // };
-
   if (produto) {
     return (
       <Container style={cardCss}>

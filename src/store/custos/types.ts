@@ -6,7 +6,8 @@ export enum CustoActionTypes {
   SET_CUSTO_PRODUTO_LIST = "@custo/SET_PRODUTO_LIST",
   SET_CUSTO_MATERIAL_LIST = "@custo/SET_MATERIAL_LIST",
   SET_VALOR_TOTAL = "@custo/SET_VALOR_TOTAL",
-  SET_CUSTO_SELECTED_ID = "@custo/SET_SELECTED_ID"
+  SET_CUSTO_SELECTED_ID = "@custo/SET_SELECTED_ID",
+  DELETE_CUSTO = "@custo/DELETE"
 }
 
 export type Custo = {
@@ -71,6 +72,11 @@ export interface SetCustoSelectedId {
   payload: string;
 }
 
+export interface DeleteCusto {
+  type: CustoActionTypes.DELETE_CUSTO;
+  payload: boolean;
+}
+
 export type CustoActions =
   | SetCusto
   | SetCustoList
@@ -79,6 +85,7 @@ export type CustoActions =
   | SetCustoMaterialList
   | SetValorTotal
   | SetCustoSelectedId
+  | DeleteCusto
   | SetCustoQuery;
 
 export const initialCustoState: CustoState = {

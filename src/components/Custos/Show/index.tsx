@@ -3,14 +3,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../store";
 import { Material } from "../../../store/material/types";
 import history from "../../../history";
-import { Container, List, Button, Icon, Divider } from "semantic-ui-react";
+import { Container, Button, Icon, Table } from "semantic-ui-react";
 import { formCss, titleCss } from "../../css";
 import { Produto } from "../../../store/produto/types";
 import { Custo, CustoActionTypes } from "../../../store/custos/types";
 import {
   getMateriaisCusto,
-  getCustosProduto
+  getCustosProduto,
+  deleteCusto,
+  clearMaterialList,
+  clearCustoList
 } from "../../../store/custos/actions";
+import { currencyFormat } from "../../../services/utils";
 
 const CustoShow: React.FC = () => {
   const dispatch = useDispatch();
@@ -27,22 +31,18 @@ const CustoShow: React.FC = () => {
     (state: AppState) => state.custos.valorTotal
   ) as number;
 
-  const setValorTotal = useCallback(async () => {
-    let valorTotal: number = Number(produto.maoDeObra);
-    await materialList.forEach(async (material: Material) => {
-      const custoMat: Custo[] = await custoList.filter(
+  const setValorTotal = useCallback(() => {
+    let newValorTotal: number = Number(produto.maoDeObra);
+    materialList.forEach(async (material: Material) => {
+      const custoMat: Custo[] = custoList.filter(
         (custo: Custo) => custo.MaterialId === material.id
       );
       const calc = material.valorUnt * custoMat[0].quantidade;
-      console.log("Material VU: " + material.valorUnt);
-      console.log("Quantidade: " + custoMat[0].quantidade);
-      console.log("Calc: " + calc);
-      valorTotal += calc;
+      newValorTotal += calc;
     });
-    console.log("Total: " + valorTotal);
-    await dispatch({
+    dispatch({
       type: CustoActionTypes.SET_VALOR_TOTAL,
-      payload: valorTotal
+      payload: newValorTotal
     });
   }, [dispatch, custoList, materialList, produto]);
 
@@ -62,84 +62,106 @@ const CustoShow: React.FC = () => {
   }, [dispatch, produto, custoList, materialList]);
 
   useEffect(() => {
-    (async () => {
-      await setValorTotal();
-    })();
-  }, [valorTotal, setValorTotal]);
+    if (!produto) {
+      history.push("/");
+    } else {
+      (async () => {
+        await setValorTotal();
+      })();
+    }
+  }, [produto, setValorTotal]);
+
+  const onRemoveClick = async (id: number) => {
+    await dispatch(deleteCusto(id));
+    await dispatch(getMateriaisCusto(produto.id));
+    await dispatch(getCustosProduto(produto.id));
+    await setValorTotal();
+  };
 
   const renderMaterialItem = (material: Material) => {
     const custoAtual = custoList.filter((custo: Custo) => {
       return custo.MaterialId === material.id;
     });
-    const custoMaterial = custoAtual[0].quantidade * material.valorUnt;
     return (
-      <>
-        <List.Content floated="right">
-          <Button icon color="red">
+      <Table.Row key={material.id}>
+        <Table.Cell>{material.nome}</Table.Cell>
+        <Table.Cell>{`${custoAtual[0].quantidade} ${material.tipoMedida}`}</Table.Cell>
+        <Table.Cell>{currencyFormat(material.valorUnt, 3)}</Table.Cell>
+        <Table.Cell>
+          {currencyFormat(custoAtual[0].quantidade * material.valorUnt, 2)}
+        </Table.Cell>
+        <Table.Cell>
+          <Button
+            onClick={() => onRemoveClick(Number(custoAtual[0].id))}
+            icon
+            color="red"
+          >
             <Icon name="close" />
           </Button>
-        </List.Content>
-        <List.Content>
-          <List.Header>{material.nome}</List.Header>
-          <List.Description>{`${custoAtual[0].quantidade} X R$${material.valorUnt}/${material.tipoMedida} - R$ ${custoMaterial}`}</List.Description>
-        </List.Content>
-      </>
+        </Table.Cell>
+      </Table.Row>
     );
   };
 
-  if (produto && materialList) {
+  const onAddCustoClick = () => {
+    dispatch(clearMaterialList());
+    dispatch(clearCustoList());
+    history.push("/custo/novo");
+  };
+
+  if (produto && materialList && valorTotal) {
     return (
       <Container style={formCss}>
         <h1 style={titleCss}>{produto.nome}</h1>
-        <List divided>
-          {materialList.map(material => {
-            return (
-              <List.Item key={material.id}>
-                {renderMaterialItem(material as Material)}
-              </List.Item>
-            );
-          })}
-          <List.Item key={produto.id}>
-            <List.Content>
-              <List.Header>Mão de Obra</List.Header>
-              <List.Description>{`R$${produto.maoDeObra}`}</List.Description>
-            </List.Content>
-          </List.Item>
-        </List>
-        <Divider />
-        <div>Custo Total: R${valorTotal}</div>
+        <Table singleLine>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>Material</Table.HeaderCell>
+              <Table.HeaderCell>Quantidade</Table.HeaderCell>
+              <Table.HeaderCell>Valor Unitário</Table.HeaderCell>
+              <Table.HeaderCell>Valor Total</Table.HeaderCell>
+              <Table.HeaderCell></Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {materialList.map((material: Material) => {
+              return renderMaterialItem(material as Material);
+            })}
+            <Table.Row>
+              <Table.Cell>Mão de Obra</Table.Cell>
+              <Table.Cell>-</Table.Cell>
+              <Table.Cell>-</Table.Cell>
+              <Table.Cell>{currencyFormat(produto.maoDeObra, 2)}</Table.Cell>
+              <Table.Cell></Table.Cell>
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell></Table.Cell>
+              <Table.Cell></Table.Cell>
+              <Table.Cell>
+                <b>Custo Total</b>
+              </Table.Cell>
+              <Table.Cell>{currencyFormat(valorTotal, 2)}</Table.Cell>
+              <Table.Cell></Table.Cell>
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell></Table.Cell>
+              <Table.Cell></Table.Cell>
+              <Table.Cell>
+                <b>Valor de Venda</b>
+              </Table.Cell>
+              <Table.Cell>{currencyFormat(valorTotal * 1.3, 2)}</Table.Cell>
+              <Table.Cell></Table.Cell>
+            </Table.Row>
+          </Table.Body>
+        </Table>
+        <Button positive floated="right" onClick={onAddCustoClick}>
+          Adicionar material ao custo
+        </Button>
       </Container>
     );
   } else {
     return <div>Carregando...</div>;
   }
-
-  // if (produto && materialList) {
-  //   return (
-  //     <Container style={formCss}>
-  //       <h1 style={titleCss}>{produto.nome}</h1>
-  //       <List divided>
-  //         {materialList.map(material => {
-  //           return (
-  //             <List.Item key={material.id}>
-  //               {renderMaterialItem(material as Material)}
-  //             </List.Item>
-  //           );
-  //         })}
-  //         <List.Item key={produto.id}>
-  //           <List.Content>
-  //             <List.Header>Mão de Obra</List.Header>
-  //             <List.Description>{`R$${produto.maoDeObra}`}</List.Description>
-  //           </List.Content>
-  //         </List.Item>
-  //       </List>
-  //       <Divider />
-  //       <div>Valor Total: R${valorTotal}</div>
-  //     </Container>
-  //   );
-  // } else {
-  //   return <div>Carregando...</div>;
-  // }
 };
 
 export default CustoShow;
