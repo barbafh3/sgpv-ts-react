@@ -35,11 +35,11 @@ export const updateCusto: ActionCreator<ThunkAction<
 >> = (formValues: any) => {
   return async (dispatch: Dispatch) => {
     const custosRef = fbDatabase.ref().child("custos");
-    const custo: Custo = {
+    const custo = {
       ProdutoId: formValues.ProdutoId,
       MaterialId: formValues.MaterialId,
       quantidade: formValues.quantidade
-    };
+    } as Custo;
     let novoCusto: FBCusto = {};
     novoCusto[formValues.id] = custo;
     const parsedCusto = parseObject(novoCusto);

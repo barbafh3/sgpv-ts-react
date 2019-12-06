@@ -9,10 +9,12 @@ export const parseObject = (obj: Object) => {
   );
 };
 
+// Pauses for a number of ms
 export const sleep = (ms: number) => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
+// Format currency on the standard R$1.234.567,89
 export const currencyFormat = (num: number, digits: number) => {
   return (
     "R$" +

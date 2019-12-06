@@ -14,12 +14,13 @@ import {
   SearchCliente
 } from "./types";
 import { requestHandler } from "../../services/nodeDbApi";
-import fbDatabase from "../../services/firebaseConfig";
-import { parseObject } from "../../services/utils";
 
-export const searchClientes: ActionCreator<
-  ThunkAction<Promise<any>, null, null, SearchCliente>
-> = (query: string) => {
+export const searchClientes: ActionCreator<ThunkAction<
+  Promise<any>,
+  null,
+  null,
+  SearchCliente
+>> = (query: string) => {
   return async (dispatch: Dispatch) => {
     const fullQuery = `SELECT * FROM clientes WHERE nome LIKE '%${query}%'`;
     const resultado = await requestHandler.post("/clientes/buscar", {
@@ -33,9 +34,12 @@ export const searchClientes: ActionCreator<
   };
 };
 
-export const setClienteQuery: ActionCreator<
-  ThunkAction<Promise<any>, null, null, SetClienteQuery>
-> = (query: string) => {
+export const setClienteQuery: ActionCreator<ThunkAction<
+  Promise<any>,
+  null,
+  null,
+  SetClienteQuery
+>> = (query: string) => {
   return async (dispatch: Dispatch) => {
     dispatch({
       type: ClienteActionTypes.SET_CLIENTE_QUERY,
@@ -44,9 +48,12 @@ export const setClienteQuery: ActionCreator<
   };
 };
 
-export const findAllClientes: ActionCreator<
-  ThunkAction<Promise<any>, null, null, FindAllClientes>
-> = () => {
+export const findAllClientes: ActionCreator<ThunkAction<
+  Promise<any>,
+  null,
+  null,
+  FindAllClientes
+>> = () => {
   return async (dispatch: Dispatch) => {
     try {
       const result = await requestHandler.get("/clientes");
@@ -60,9 +67,12 @@ export const findAllClientes: ActionCreator<
   };
 };
 
-export const deleteCliente: ActionCreator<
-  ThunkAction<Promise<any>, null, null, DeleteCliente>
-> = (cliente: Cliente) => {
+export const deleteCliente: ActionCreator<ThunkAction<
+  Promise<any>,
+  null,
+  null,
+  DeleteCliente
+>> = (cliente: Cliente) => {
   return async (dispatch: Dispatch) => {
     try {
       await requestHandler.delete(`/clientes/${cliente.id}/remover`);
@@ -79,9 +89,12 @@ export const deleteCliente: ActionCreator<
   };
 };
 
-export const setCliente: ActionCreator<
-  ThunkAction<Promise<any>, null, null, SetCliente>
-> = (cliente: Cliente) => {
+export const setCliente: ActionCreator<ThunkAction<
+  Promise<any>,
+  null,
+  null,
+  SetCliente
+>> = (cliente: Cliente) => {
   return async (dispatch: Dispatch) => {
     dispatch({
       type: ClienteActionTypes.SET_CLIENTE,
@@ -90,9 +103,12 @@ export const setCliente: ActionCreator<
   };
 };
 
-export const clearCliente: ActionCreator<
-  ThunkAction<Promise<any>, null, null, ClearCliente>
-> = () => {
+export const clearCliente: ActionCreator<ThunkAction<
+  Promise<any>,
+  null,
+  null,
+  ClearCliente
+>> = () => {
   return async (dispatch: Dispatch) => {
     dispatch({
       type: ClienteActionTypes.SET_CLIENTE,
@@ -101,9 +117,12 @@ export const clearCliente: ActionCreator<
   };
 };
 
-export const clearClienteSearch: ActionCreator<
-  ThunkAction<Promise<any>, null, null, ClearClienteSearch>
-> = () => {
+export const clearClienteSearch: ActionCreator<ThunkAction<
+  Promise<any>,
+  null,
+  null,
+  ClearClienteSearch
+>> = () => {
   return async (dispatch: Dispatch) => {
     dispatch({
       type: ClienteActionTypes.SET_CLIENTE_SEARCH,
@@ -112,9 +131,12 @@ export const clearClienteSearch: ActionCreator<
   };
 };
 
-export const saveCliente: ActionCreator<
-  ThunkAction<Promise<any>, null, null, SaveCliente>
-> = (formValues: any) => {
+export const saveCliente: ActionCreator<ThunkAction<
+  Promise<any>,
+  null,
+  null,
+  SaveCliente
+>> = (formValues: any) => {
   return async (dispatch: Dispatch) => {
     const {
       nome,
@@ -147,9 +169,12 @@ export const saveCliente: ActionCreator<
   };
 };
 
-export const updateCliente: ActionCreator<
-  ThunkAction<Promise<any>, null, null, UpdateCliente>
-> = (formValues: any) => {
+export const updateCliente: ActionCreator<ThunkAction<
+  Promise<any>,
+  null,
+  null,
+  UpdateCliente
+>> = (formValues: any) => {
   return async (dispatch: Dispatch) => {
     const {
       id,

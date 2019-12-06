@@ -22,6 +22,7 @@ import {
 } from "semantic-ui-react";
 import { listCss, titleCss } from "../../css";
 import { sleep } from "../../../services/utils";
+import { requestHandler } from "../../../services/nodeDbApi";
 
 const ProdutoSearch: React.FC = () => {
   const dispatch = useDispatch();
@@ -57,8 +58,13 @@ const ProdutoSearch: React.FC = () => {
     dispatch(setProdutoQuery(e.target.value));
   };
 
-  const onShowAllSubmit = () => {
-    dispatch(findAllProdutos());
+  const findAllProdNoThunk = async (): Promise<any> => {
+    const result = await requestHandler.get("/produtos");
+    dispatch(result.data);
+  };
+
+  const onShowAllSubmit = async () => {
+    await findAllProdNoThunk();
   };
 
   const onSearchSubmit = () => {

@@ -1,18 +1,22 @@
 import { ActionCreator, Dispatch } from "redux";
-import { ThunkAction } from "redux-thunk";
+import { ThunkAction, ThunkDispatch } from "redux-thunk";
 import {
   SetProduto,
   Produto,
   ProdutoActionTypes,
   SetProdutoQuery,
-  SetProdutoSearch
+  SetProdutoSearch,
+  ProdutoActions
 } from "./types";
 import fbDatabase from "../../services/firebaseConfig";
 import { requestHandler } from "../../services/nodeDbApi";
 
-export const searchSpecific: ActionCreator<
-  ThunkAction<Promise<any>, null, null, SetProdutoSearch>
-> = (id: string) => {
+export const searchSpecific: ActionCreator<ThunkAction<
+  Promise<any>,
+  null,
+  null,
+  SetProdutoSearch
+>> = (id: string) => {
   return async (dispatch: Dispatch) => {
     fbDatabase
       .ref("produtos/")
@@ -20,18 +24,23 @@ export const searchSpecific: ActionCreator<
       .on("value", snapshot => {
         const raw = snapshot.val();
         // if (raw) {
-        dispatch({
-          type: ProdutoActionTypes.SET_PRODUTO_SEARCH,
-          payload: raw
-        });
+        return new Promise(() =>
+          dispatch({
+            type: ProdutoActionTypes.SET_PRODUTO_SEARCH,
+            payload: raw
+          })
+        );
         // }
       });
   };
 };
 
-export const searchProdutos: ActionCreator<
-  ThunkAction<Promise<any>, null, null, SetProdutoSearch>
-> = (query: string) => {
+export const searchProdutos: ActionCreator<ThunkAction<
+  Promise<any>,
+  null,
+  null,
+  SetProdutoSearch
+>> = (query: string) => {
   return async (dispatch: Dispatch) => {
     fbDatabase
       .ref("produtos")
@@ -51,44 +60,51 @@ export const searchProdutos: ActionCreator<
   };
 };
 
-export const findAllProdutos: ActionCreator<
-  ThunkAction<Promise<any>, null, null, SetProduto>
-> = () => {
-  return async (dispatch: Dispatch) => {
-    try {
-      const result = await requestHandler.get("/produtos");
-      dispatch({
-        type: ProdutoActionTypes.SET_PRODUTO_SEARCH,
-        payload: result.data
-      });
-    } catch (e) {
-      console.log(e);
-    }
+export const findAllProdNoThunk = async (dispatch: Dispatch): Promise<any> => {
+  const result = await requestHandler.get("/produtos");
+  dispatch(result.data);
+};
+
+export const setProdutoList = (list: Produto[]) => async (
+  dispatch: Dispatch
+) => {
+  return {
+    type: ProdutoActionTypes.SET_PRODUTO_LIST,
+    payload: list
   };
 };
 
-// export const findAllProdutos: ActionCreator<
-//   ThunkAction<Promise<any>, null, null, SetProduto>
-// > = () => {
-//   return async (dispatch: Dispatch) => {
-//     const produtosRef = fbDatabase.ref().child("produtos");
-//     try {
-//       produtosRef.on("value", snapshot => {
-//         const raw = snapshot.val();
-//         dispatch({
-//           type: ProdutoActionTypes.SET_PRODUTO_SEARCH,
-//           payload: raw
-//         });
-//       });
-//     } catch (e) {
-//       console.log(e);
-//     }
-//   };
-// };
+export const findAllProdutos = (): ThunkAction<
+  Promise<void>,
+  {},
+  {},
+  ProdutoActions
+> => {
+  return async (
+    dispatch: ThunkDispatch<{}, {}, ProdutoActions>
+  ): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const result = await requestHandler.get("/produtos");
+        dispatch({
+          type: ProdutoActionTypes.SET_PRODUTO_SEARCH,
+          payload: result.data
+        });
+        resolve();
+      } catch (e) {
+        console.log(e);
+        reject();
+      }
+    });
+  };
+};
 
-export const clearProdutoSearch: ActionCreator<
-  ThunkAction<Promise<any>, null, null, SetProduto>
-> = () => {
+export const clearProdutoSearch: ActionCreator<ThunkAction<
+  Promise<any>,
+  null,
+  null,
+  SetProduto
+>> = () => {
   return async (dispatch: Dispatch) => {
     dispatch({
       type: ProdutoActionTypes.SET_PRODUTO_SEARCH,
@@ -97,9 +113,12 @@ export const clearProdutoSearch: ActionCreator<
   };
 };
 
-export const setProduto: ActionCreator<
-  ThunkAction<Promise<any>, null, null, SetProduto>
-> = (produto: Produto) => {
+export const setProduto: ActionCreator<ThunkAction<
+  Promise<any>,
+  null,
+  null,
+  SetProduto
+>> = (produto: Produto) => {
   return async (dispatch: Dispatch) => {
     dispatch({
       type: ProdutoActionTypes.SET_PRODUTO,
@@ -108,9 +127,12 @@ export const setProduto: ActionCreator<
   };
 };
 
-export const setProdutoQuery: ActionCreator<
-  ThunkAction<Promise<any>, null, null, SetProdutoQuery>
-> = (query: string) => {
+export const setProdutoQuery: ActionCreator<ThunkAction<
+  Promise<any>,
+  null,
+  null,
+  SetProdutoQuery
+>> = (query: string) => {
   return async (dispatch: Dispatch) => {
     dispatch({
       type: ProdutoActionTypes.SET_PRODUTO_QUERY,
@@ -119,9 +141,12 @@ export const setProdutoQuery: ActionCreator<
   };
 };
 
-export const clearProduto: ActionCreator<
-  ThunkAction<Promise<any>, null, null, SetProduto>
-> = () => {
+export const clearProduto: ActionCreator<ThunkAction<
+  Promise<any>,
+  null,
+  null,
+  SetProduto
+>> = () => {
   return async (dispatch: Dispatch) => {
     dispatch({
       type: ProdutoActionTypes.SET_PRODUTO,
@@ -130,9 +155,12 @@ export const clearProduto: ActionCreator<
   };
 };
 
-export const saveProduto: ActionCreator<
-  ThunkAction<Promise<any>, null, null, SetProduto>
-> = (formValues: any) => {
+export const saveProduto: ActionCreator<ThunkAction<
+  Promise<any>,
+  null,
+  null,
+  SetProduto
+>> = (formValues: any) => {
   return async (dispatch: Dispatch) => {
     const { nome, maoDeObra, descricao } = formValues;
     const produto: Produto = {
@@ -152,33 +180,12 @@ export const saveProduto: ActionCreator<
   };
 };
 
-// export const saveProduto: ActionCreator<
-//   ThunkAction<Promise<any>, null, null, SetProduto>
-// > = (formValues: any) => {
-//   return async (dispatch: Dispatch) => {
-//     const produtoRef = fbDatabase.ref().child("produtos");
-//     const { nome, maoDeObra, descricao } = formValues;
-//     const novoProduto: Produto = {
-//       nome,
-//       maoDeObra,
-//       descricao
-//     };
-//     const parsedProduto = parseObject(novoProduto);
-//     try {
-//       produtoRef.push(parsedProduto);
-//       dispatch({
-//         type: ProdutoActionTypes.SET_PRODUTO,
-//         payload: novoProduto
-//       });
-//     } catch (e) {
-//       console.log(e);
-//     }
-//   };
-// };
-
-export const deleteProduto: ActionCreator<
-  ThunkAction<Promise<any>, null, null, SetProduto>
-> = (id: string) => {
+export const deleteProduto: ActionCreator<ThunkAction<
+  Promise<any>,
+  null,
+  null,
+  SetProduto
+>> = (id: string) => {
   return async (dispatch: Dispatch) => {
     try {
       await requestHandler.delete(`/produtos/${id}/remover`);
@@ -195,18 +202,12 @@ export const deleteProduto: ActionCreator<
   };
 };
 
-// export const deleteProduto: ActionCreator<
-//   ThunkAction<Promise<any>, null, null, SetProduto>
-// > = (id: string) => {
-//   return async (dispatch: Dispatch) => {
-//     const produtoRef = fbDatabase.ref(`produtos/${id}`);
-//     await produtoRef.remove();
-//   };
-// };
-
-export const updateProduto: ActionCreator<
-  ThunkAction<Promise<any>, null, null, SetProduto>
-> = (formValues: any) => {
+export const updateProduto: ActionCreator<ThunkAction<
+  Promise<any>,
+  null,
+  null,
+  SetProduto
+>> = (formValues: any) => {
   return async (dispatch: Dispatch) => {
     const { id, nome, maoDeObra, descricao } = formValues;
     const produto: Produto = {
@@ -226,29 +227,3 @@ export const updateProduto: ActionCreator<
     }
   };
 };
-
-// export const updateProduto: ActionCreator<
-//   ThunkAction<Promise<any>, null, null, SetProduto>
-// > = (formValues: any) => {
-//   return async (dispatch: Dispatch) => {
-//     const produtoRef = fbDatabase.ref().child("produtos");
-//     const { id, nome, maoDeObra, descricao } = formValues;
-//     const produto: Produto = {
-//       nome,
-//       maoDeObra,
-//       descricao
-//     };
-//     let novoProduto: FBProduto = {};
-//     novoProduto[id] = produto;
-//     const parsedProduto = parseObject(novoProduto);
-//     try {
-//       produtoRef.update(parsedProduto);
-//       dispatch({
-//         type: ProdutoActionTypes.SET_PRODUTO,
-//         payload: novoProduto
-//       });
-//     } catch (e) {
-//       console.log(e);
-//     }
-//   };
-// };

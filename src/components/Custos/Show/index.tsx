@@ -4,7 +4,7 @@ import { AppState } from "../../../store";
 import { Material } from "../../../store/material/types";
 import history from "../../../history";
 import { Container, Button, Icon, Table } from "semantic-ui-react";
-import { formCss, titleCss, tableCss } from "../../css";
+import { titleCss, tableCss } from "../../css";
 import { Produto } from "../../../store/produto/types";
 import { Custo, CustoActionTypes } from "../../../store/custos/types";
 import {
@@ -31,19 +31,23 @@ const CustoShow: React.FC = () => {
     (state: AppState) => state.custos.valorTotal
   ) as number;
 
-  const setValorTotal = useCallback(() => {
+  const setValorTotal = useCallback(async () => {
     let newValorTotal: number = Number(produto.maoDeObra);
-    materialList.forEach(async (material: Material) => {
-      const custoMat: Custo[] = custoList.filter(
-        (custo: Custo) => custo.MaterialId === material.id
-      );
-      const calc = material.valorUnt * custoMat[0].quantidade;
-      newValorTotal += calc;
+    await new Promise(() => {
+      materialList.forEach(async (material: Material) => {
+        const custoMat: Custo[] = custoList.filter(
+          (custo: Custo) => custo.MaterialId === material.id
+        );
+        const calc = material.valorUnt * custoMat[0].quantidade;
+        newValorTotal += calc;
+      });
     });
-    dispatch({
-      type: CustoActionTypes.SET_VALOR_TOTAL,
-      payload: newValorTotal
-    });
+    await new Promise(() =>
+      dispatch({
+        type: CustoActionTypes.SET_VALOR_TOTAL,
+        payload: newValorTotal
+      })
+    );
   }, [dispatch, custoList, materialList, produto]);
 
   useEffect(() => {
@@ -52,10 +56,10 @@ const CustoShow: React.FC = () => {
     } else {
       (async () => {
         if (custoList.length === 0) {
-          await dispatch(getCustosProduto(produto.id));
+          await new Promise(() => dispatch(getCustosProduto(produto.id)));
         }
         if (materialList.length === 0) {
-          await dispatch(getMateriaisCusto(produto.id));
+          await new Promise(() => dispatch(getMateriaisCusto(produto.id)));
         }
       })();
     }
@@ -66,7 +70,7 @@ const CustoShow: React.FC = () => {
       history.push("/");
     } else {
       (async () => {
-        await setValorTotal();
+        await new Promise(() => setValorTotal());
       })();
     }
   }, [produto, setValorTotal]);
