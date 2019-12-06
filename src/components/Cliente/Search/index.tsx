@@ -27,9 +27,6 @@ const ClienteSearch = () => {
   const searchResult = useSelector(
     (state: AppState) => state.clientes.searchResult
   ) as Cliente[];
-  const clientes = useSelector(
-    (state: AppState) => state.clientes.list
-  ) as Cliente[];
 
   useEffect(() => {
     return () => {
@@ -48,8 +45,8 @@ const ClienteSearch = () => {
         history.push("/cliente/alterar");
         break;
       case "delete":
-        await dispatch(deleteCliente(cliente.id));
-        await dispatch(findAllClientes());
+        await new Promise(() => dispatch(deleteCliente(cliente.id)));
+        await new Promise(() => dispatch(findAllClientes()));
         break;
       default:
         break;
