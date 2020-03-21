@@ -6,6 +6,12 @@ export enum ProdutoActionTypes {
   DELETE_PRODUTO = "@produto/DELETE"
 }
 
+export enum ProdutoRoutes {
+  NEW = "/produto/novo",
+  UPDATE = "/produto/alterar",
+  SEARCH = "/produto/pesquisar"
+}
+
 export type Produto = {
   id?: string;
   nome: string;

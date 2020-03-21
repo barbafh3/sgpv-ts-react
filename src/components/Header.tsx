@@ -1,65 +1,71 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Menu, Dropdown, Icon } from "semantic-ui-react";
-import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+
 import history from "../history";
+import { AppRoutes, MainRoutes } from "../store/types";
+import { ClienteRoutes } from "../store/cliente/types";
+import { MaterialRoutes } from "../store/material/types";
+import { ProdutoRoutes } from "../store/produto/types";
+import { CustoRoutes } from "../store/custos/types";
 
 const Header: React.FC = () => {
-  const dispatch = useDispatch();
-
-  useEffect(() => {}, [dispatch]);
-
-  const onHomeClick = () => {
-    history.push("/");
+  const onMenuItemClick = (route: AppRoutes) => {
+    history.push(route);
   };
 
   return (
     <>
       <Menu>
-        <Menu.Item header onClick={onHomeClick}>
+        <Menu.Item header onClick={() => onMenuItemClick(MainRoutes.HOME)}>
           SGPV
         </Menu.Item>
         <Dropdown item text="Material">
           <Dropdown.Menu>
-            <Dropdown.Item>
+            <Dropdown.Item onClick={() => onMenuItemClick(MaterialRoutes.NEW)}>
               <Icon name="plus" />
-              <Link to="/material/novo">Novo</Link>
+              Novo
             </Dropdown.Item>
-            <Dropdown.Item>
+            <Dropdown.Item
+              onClick={() => onMenuItemClick(MaterialRoutes.SEARCH)}
+            >
               <Icon name="search" />
-              <Link to="/material/pesquisar">Pesquisar</Link>
+              Pesquisar
             </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
         <Dropdown item text="Clientes">
           <Dropdown.Menu>
-            <Dropdown.Item>
+            <Dropdown.Item onClick={() => onMenuItemClick(ClienteRoutes.NEW)}>
               <Icon name="plus" />
-              <Link to="/cliente/novo">Novo</Link>
+              Novo
             </Dropdown.Item>
-            <Dropdown.Item>
+            <Dropdown.Item
+              onClick={() => onMenuItemClick(ClienteRoutes.SEARCH)}
+            >
               <Icon name="search" />
-              <Link to="/cliente/pesquisar">Pesquisar</Link>
+              Pesquisar
             </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
         <Dropdown item text="Produtos">
           <Dropdown.Menu>
-            <Dropdown.Item>
+            <Dropdown.Item onClick={() => onMenuItemClick(ProdutoRoutes.NEW)}>
               <Icon name="plus" />
-              <Link to="/produto/novo">Novo</Link>
+              Novo
             </Dropdown.Item>
-            <Dropdown.Item>
+            <Dropdown.Item
+              onClick={() => onMenuItemClick(ProdutoRoutes.SEARCH)}
+            >
               <Icon name="search" />
-              <Link to="/produto/pesquisar">Pesquisar</Link>
+              Pesquisar
             </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
         <Dropdown item text="Custos">
           <Dropdown.Menu>
-            <Dropdown.Item>
+            <Dropdown.Item onClick={() => onMenuItemClick(CustoRoutes.SEARCH)}>
               <Icon name="search" />
-              <Link to="/custo/pesquisar">Pesquisar</Link>
+              Pesquisar
             </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>

@@ -8,8 +8,7 @@ import {
   findAllProdutos,
   deleteProduto,
   setProdutoQuery,
-  searchProdutos,
-  searchSpecific
+  searchProdutos
 } from "../../../store/produto/actions";
 import history from "../../../history";
 import {
@@ -22,7 +21,6 @@ import {
 } from "semantic-ui-react";
 import { listCss, titleCss } from "../../css";
 import { sleep } from "../../../services/utils";
-import { requestHandler } from "../../../services/nodeDbApi";
 
 const ProdutoSearch: React.FC = () => {
   const dispatch = useDispatch();
@@ -40,16 +38,19 @@ const ProdutoSearch: React.FC = () => {
   const handleClick = async (name: string, produto: Produto) => {
     switch (name) {
       case "show":
-        await dispatch(setProduto(produto));
+        await new Promise(resolve => {
+          dispatch(setProduto(produto));
+          resolve();
+        });
         history.push("/produto");
         break;
       case "edit":
-        dispatch(setProduto(produto));
+        await new Promise(() => dispatch(setProduto(produto)));
         history.push("/produto/editar");
         break;
       case "delete":
-        dispatch(deleteProduto(produto.id));
-        dispatch(findAllProdutos());
+        await new Promise(() => dispatch(deleteProduto(produto.id)));
+        await new Promise(() => dispatch(findAllProdutos()));
         break;
     }
   };
@@ -58,13 +59,8 @@ const ProdutoSearch: React.FC = () => {
     dispatch(setProdutoQuery(e.target.value));
   };
 
-  const findAllProdNoThunk = async (): Promise<any> => {
-    const result = await requestHandler.get("/produtos");
-    dispatch(result.data);
-  };
-
   const onShowAllSubmit = async () => {
-    await findAllProdNoThunk();
+    await new Promise(() => dispatch(findAllProdutos()));
   };
 
   const onSearchSubmit = () => {
@@ -74,14 +70,15 @@ const ProdutoSearch: React.FC = () => {
   };
 
   const onAddClick = async (produto: Produto) => {
-    await dispatch(setProduto(produto));
+    await new Promise(() => dispatch(setProduto(produto)));
     await sleep(1000);
     history.push("/custo/novo");
   };
 
-  const onFilterClick = () => {
-    // dispatch(clearProdutoSearch());
-    dispatch(searchSpecific("HUHUHUHUHU"));
+  const onFilterClick = async () => {
+    await new Promise(() => {
+      dispatch(clearProdutoSearch());
+    });
   };
 
   const renderSearch = () => {

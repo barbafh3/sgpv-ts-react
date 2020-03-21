@@ -33,21 +33,23 @@ const CustoShow: React.FC = () => {
 
   const setValorTotal = useCallback(async () => {
     let newValorTotal: number = Number(produto.maoDeObra);
-    await new Promise(() => {
-      materialList.forEach(async (material: Material) => {
+    await new Promise(resolve => {
+      materialList.forEach((material: Material) => {
         const custoMat: Custo[] = custoList.filter(
           (custo: Custo) => custo.MaterialId === material.id
         );
         const calc = material.valorUnt * custoMat[0].quantidade;
         newValorTotal += calc;
       });
+      resolve();
     });
-    await new Promise(() =>
+    await new Promise(resolve => {
       dispatch({
         type: CustoActionTypes.SET_VALOR_TOTAL,
         payload: newValorTotal
-      })
-    );
+      });
+      resolve();
+    });
   }, [dispatch, custoList, materialList, produto]);
 
   useEffect(() => {
@@ -56,10 +58,16 @@ const CustoShow: React.FC = () => {
     } else {
       (async () => {
         if (custoList.length === 0) {
-          await new Promise(() => dispatch(getCustosProduto(produto.id)));
+          await new Promise(resolve => {
+            dispatch(getCustosProduto(produto.id));
+            resolve();
+          });
         }
         if (materialList.length === 0) {
-          await new Promise(() => dispatch(getMateriaisCusto(produto.id)));
+          await new Promise(resolve => {
+            dispatch(getMateriaisCusto(produto.id));
+            resolve();
+          });
         }
       })();
     }
@@ -70,15 +78,18 @@ const CustoShow: React.FC = () => {
       history.push("/");
     } else {
       (async () => {
-        await new Promise(() => setValorTotal());
+        await new Promise(resolve => {
+          setValorTotal();
+          resolve();
+        });
       })();
     }
   }, [produto, setValorTotal]);
 
   const onRemoveClick = async (id: number) => {
-    await dispatch(deleteCusto(id));
-    await dispatch(getMateriaisCusto(produto.id));
-    await dispatch(getCustosProduto(produto.id));
+    await new Promise(() => dispatch(deleteCusto(id)));
+    await new Promise(() => dispatch(getMateriaisCusto(produto.id)));
+    await new Promise(() => dispatch(getCustosProduto(produto.id)));
     await setValorTotal();
   };
 

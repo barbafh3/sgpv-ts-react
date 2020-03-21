@@ -6,6 +6,12 @@ export enum ClienteActionTypes {
   DELETE_CLIENTE = "@cliente/DELETE"
 }
 
+export enum ClienteRoutes {
+  NEW = "/cliente/novo",
+  UPDATE = "/cliente/alterar",
+  SEARCH = "/cliente/pesquisar"
+}
+
 export type Cliente = {
   id?: string;
   nome: string;

@@ -14,7 +14,9 @@ export enum MaterialActionTypes {
 
 export enum MaterialRoutes {
   SHOW = "material",
-  NEW = "material/novo"
+  NEW = "/material/novo",
+  UPDATE = "/material/alterar",
+  SEARCH = "/material/pesquisar"
 }
 
 export type Material = {

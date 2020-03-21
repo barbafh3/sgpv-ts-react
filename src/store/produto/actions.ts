@@ -11,29 +11,29 @@ import {
 import fbDatabase from "../../services/firebaseConfig";
 import { requestHandler } from "../../services/nodeDbApi";
 
-export const searchSpecific: ActionCreator<ThunkAction<
-  Promise<any>,
-  null,
-  null,
-  SetProdutoSearch
->> = (id: string) => {
-  return async (dispatch: Dispatch) => {
-    fbDatabase
-      .ref("produtos/")
-      .orderByChild("nome")
-      .on("value", snapshot => {
-        const raw = snapshot.val();
-        // if (raw) {
-        return new Promise(() =>
-          dispatch({
-            type: ProdutoActionTypes.SET_PRODUTO_SEARCH,
-            payload: raw
-          })
-        );
-        // }
-      });
-  };
-};
+// export const searchSpecific: ActionCreator<ThunkAction<
+//   Promise<any>,
+//   null,
+//   null,
+//   SetProdutoSearch
+// >> = (id: string) => {
+//   return async (dispatch: Dispatch) => {
+//     fbDatabase
+//       .ref("produtos/")
+//       .orderByChild("nome")
+//       .on("value", snapshot => {
+//         const raw = snapshot.val();
+//         // if (raw) {
+//         return new Promise(() =>
+//           dispatch({
+//             type: ProdutoActionTypes.SET_PRODUTO_SEARCH,
+//             payload: raw
+//           })
+//         );
+//         // }
+//       });
+//   };
+// };
 
 export const searchProdutos: ActionCreator<ThunkAction<
   Promise<any>,
@@ -58,11 +58,6 @@ export const searchProdutos: ActionCreator<ThunkAction<
       console.log(e);
     }
   };
-};
-
-export const findAllProdNoThunk = async (dispatch: Dispatch): Promise<any> => {
-  const result = await requestHandler.get("/produtos");
-  dispatch(result.data);
 };
 
 export const setProdutoList = (list: Produto[]) => async (

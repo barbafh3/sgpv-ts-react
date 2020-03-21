@@ -14,6 +14,8 @@ const CustoNew: React.FC = () => {
     (state: AppState) => state.produtos.produto
   ) as Produto;
 
+ 
+  
   useEffect(() => {
     if (!produto) {
       history.push("/");
@@ -21,7 +23,7 @@ const CustoNew: React.FC = () => {
   }, [produto]);
 
   const onSubmit = async (formValues: any) => {
-    await dispatch(saveCusto(formValues));
+    await new Promise(() => dispatch(saveCusto(formValues)));
     history.push("/custo");
   };
 

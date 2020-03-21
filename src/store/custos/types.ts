@@ -10,6 +10,12 @@ export enum CustoActionTypes {
   DELETE_CUSTO = "@custo/DELETE"
 }
 
+export enum CustoRoutes {
+  NEW = "/custo/novo",
+  UPDATE = "/custo/alterar",
+  SEARCH = "/custo/pesquisar"
+}
+
 export type Custo = {
   id?: string;
   ProdutoId: string;

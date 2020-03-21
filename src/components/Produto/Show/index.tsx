@@ -25,7 +25,7 @@ const ProdutoShow: React.FC = () => {
     history.goBack();
   };
 
-  const onShowCustoClick = async () => {
+  const onShowCustoClick = () => {
     history.push("/custo");
   };
 
